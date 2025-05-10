@@ -12,6 +12,16 @@
   <link rel="stylesheet" href="../dist/css/pages/page-icons.css" />
   <link rel="stylesheet" href="../dist/css/pages/page-misc.css" />
   <link rel="stylesheet" href="../dist/css/fonts/boxicons.css" />
+  <style>
+    pre {
+      background: #272822;
+      color: #f8f8f2;
+      padding: 1em;
+      border-radius: 5px;
+      overflow-x: auto;
+      font-size: 0.85rem;
+    }
+  </style>
 </head>
 <body>
   <!-- Navbar básica -->
@@ -30,8 +40,8 @@
             <h1 class="text-primary mb-4">Comentarios de Pacientes</h1>
             <p class="text-muted mb-4">A continuación se muestran los comentarios que tus pacientes han dejado sobre tu atención.</p>
 
-            <!-- Comentarios para el médico -->
-            <div class="card">
+            <!-- Comentarios cargados dinámicamente -->
+            <div class="card mb-4">
               <div class="card-header">
                 <h5 class="card-title">Comentarios Recientes</h5>
               </div>
@@ -44,27 +54,8 @@
                       <th>Fecha</th>
                     </tr>
                   </thead>
-                  <tbody>
-                    <tr>
-                      <td>Marcela Silva</td>
-                      <td>Gracias por resolver mis dudas con claridad y amabilidad.</td>
-                      <td>2025-05-06</td>
-                    </tr>
-                    <tr>
-                      <td>Ricardo Soto</td>
-                      <td>Muy buena atención. Me sentí escuchado.</td>
-                      <td>2025-05-05</td>
-                    </tr>
-                    <tr>
-                      <td>Lucía Fernández</td>
-                      <td>Gracias por tu dedicación, excelente profesional.</td>
-                      <td>2025-05-03</td>
-                    </tr>
-                    <tr>
-                      <td>Carlos Núñez</td>
-                      <td>Explicó todo con paciencia, lo recomiendo mucho.</td>
-                      <td>2025-05-02</td>
-                    </tr>
+                  <tbody id="comentarios-body">
+                    <tr><td colspan="3" class="text-muted">Cargando comentarios...</td></tr>
                   </tbody>
                 </table>
               </div>
@@ -76,12 +67,30 @@
     </div>
   </div>
 
-  <!-- Scripts -->
+  <!-- Scripts base -->
   <script src="../dist/js/jquery.js"></script>
   <script src="../dist/js/popper.js"></script>
   <script src="../dist/js/bootstrap.js"></script>
   <script src="../dist/js/menu.js"></script>
   <script src="../dist/js/helpers.js"></script>
   <script src="../dist/js/libs/perfect-scrollbar.js"></script>
-</body>
-</html>
+
+<script>
+  fetch("http://localhost:5000/api/comentarios")
+    .then(res => res.json())
+    .then(data => {
+      const tbody = document.getElementById("comentarios-body");
+      tbody.innerHTML = "";
+      data.forEach(c => {
+        const tr = document.createElement("tr");
+        tr.innerHTML = `<td>${c.paciente}</td><td>${c.comentario}</td><td>${c.fecha}</td>`;
+        tbody.appendChild(tr);
+      });
+    })
+    .catch(err => {
+      document.getElementById("comentarios-body").innerHTML = 
+        '<tr><td colspan="3" class="text-danger">Error al cargar comentarios</td></tr>';
+      console.error("Error:", err);
+    });
+</script>
+
