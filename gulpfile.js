@@ -64,7 +64,7 @@ const serveTasks = function () {
   browserSync.init({
     server: {
       baseDir: serverPath,
-      index: 'html/inicio/auth-login-basic.html' // 👈 abrirá automáticamente tu página personalizada
+      index: 'html/perfil_medico.html' // 👈 abrirá automáticamente tu página personalizada
     }
   });
 

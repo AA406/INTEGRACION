@@ -120,7 +120,11 @@ const webpackConfig = {
     // blueimp-gallery plugin
     './blueimp-helper': 'jQuery',
     './blueimp-gallery': 'blueimpGallery',
-    './blueimp-gallery-video': 'blueimpGallery'
+    './blueimp-gallery-video': 'blueimpGallery',
+    express: 'commonjs express',
+    sqlite3: 'commonjs sqlite3',
+    'body-parser': 'commonjs body-parser',
+    cors: 'commonjs cors'
   }
 };
 
