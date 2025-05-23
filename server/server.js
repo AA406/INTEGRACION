@@ -56,12 +56,12 @@ async function insertarDatosDePrueba() {
       `INSERT INTO MEDICO (id_med, rut, nombre, apellido, email, est_med, ESPECIALIDAD_id_especialidad)
        VALUES (:id, :rut, :nombre, :apellido, :email, :estado, :especialidad)`,
       {
-        id: 1,
+        id: 999,
         rut: 'med123', // será la contraseña
         nombre: 'Juan',
         apellido: 'Prueba',
         email: 'medico@test.com',
-        estado: 'activo',
+        estado: 1,
         especialidad: 1 // asegúrate que existe
       },
       { autoCommit: true }
@@ -72,7 +72,7 @@ async function insertarDatosDePrueba() {
       `INSERT INTO ADMINISTRADOR (id_administrador, rut, email, nombre)
        VALUES (:id, :rut, :email, :nombre)`,
       {
-        id: 1,
+        id: 999,
         rut: 'admin123', // será la contraseña
         email: 'admin@test.com',
         nombre: 'Admin'
