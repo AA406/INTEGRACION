@@ -1,122 +1,108 @@
 <!doctype html>
-<html lang="en" class="layout-wide customizer-hide" data-assets-path="/assets/" data-template="vertical-menu-template-free">
-  <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0" />
-    <title>Salud Total</title>
-    <meta name="description" content="" />
+<html lang="es" class="layout-wide customizer-hide" data-assets-path="/assets/" data-template="vertical-menu-template-free">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0" />
+  <title>Salud Total - Iniciar sesión</title>
 
-    <!-- Rutas absolutas corregidas -->
-    <link rel="icon" type="image/x-icon" href="/assets/img/logo/logo.jpg" />
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link href="https://fonts.googleapis.com/css2?family=Public+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400;1,500;1,600;1,700&display=swap" rel="stylesheet" />
-    <link rel="stylesheet" href="/assets/vendor/fonts/iconify-icons.css" />
-    <link rel="stylesheet" href="/assets/vendor/css/core.css" />
-    <link rel="stylesheet" href="/assets/css/demo.css" />
-    <link rel="stylesheet" href="/assets/vendor/libs/perfect-scrollbar/perfect-scrollbar.css" />
-    <link rel="stylesheet" href="/assets/vendor/css/pages/page-auth.css" />
+  <link rel="icon" type="image/x-icon" href="/assets/img/logo/logo.jpg" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Public+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="/assets/vendor/fonts/iconify-icons.css" />
+  <link rel="stylesheet" href="/assets/vendor/css/core.css" />
+  <link rel="stylesheet" href="/assets/css/demo.css" />
+  <link rel="stylesheet" href="/assets/vendor/libs/perfect-scrollbar/perfect-scrollbar.css" />
+  <link rel="stylesheet" href="/assets/vendor/css/pages/page-auth.css" />
 
-    <script src="/assets/vendor/js/helpers.js"></script>
-    <script src="/assets/js/config.js"></script>
-  </head>
+  <script src="/assets/vendor/js/helpers.js"></script>
+  <script src="/assets/js/config.js"></script>
+</head>
 
-  <body>
-    <div class="container-xxl">
-      <div class="authentication-wrapper authentication-basic container-p-y">
-        <div class="authentication-inner">
-          <div class="card px-sm-6 px-0">
-            <div class="card-body">
-              <div class="app-brand justify-content-center">
-                <a href="index.html" class="app-brand-link gap-2">
-                  <span class="app-brand-logo demo">
-                    <span class="text-primary">
-                      <!-- Logo SVG aquí -->
-                    </span>
-                  </span>
-                  <span class="app-brand-text demo text-heading fw-bold">Salud Total</span>
-                </a>
-              </div>
-              <h4 class="mb-1">Bienvenido a Salud Total 👋</h4>
-              <p class="mb-6">Por favor inicia sesión</p>
-
-              <form id="formAuthentication" class="mb-6">
-                <div class="mb-6">
-                  <label for="email" class="form-label">Correo o usuario</label>
-                  <input type="text" class="form-control" id="email" name="email-username" placeholder="Ingresa tu correo o usuario" autofocus />
-                </div>
-                <div class="mb-6 form-password-toggle">
-                  <label class="form-label" for="password">Contraseña</label>
-                  <div class="input-group input-group-merge">
-                    <input type="password" id="password" class="form-control" name="password" placeholder="••••••••••••" aria-describedby="password" />
-                    <span class="input-group-text cursor-pointer"><i class="icon-base bx bx-hide"></i></span>
-                  </div>
-                </div>
-                <div class="mb-8">
-                  <div class="d-flex justify-content-between">
-                    <div class="form-check mb-0">
-                      <input class="form-check-input" type="checkbox" id="remember-me" />
-                      <label class="form-check-label" for="remember-me"> Recordarme </label>
-                    </div>
-                    <a href="auth-forgot-password-basic.html">¿Olvidaste tu contraseña?</a>
-                  </div>
-                </div>
-                <div class="mb-6">
-                  <button type="submit" class="btn btn-primary d-grid w-100">Inicia sesión</button>
-                </div>
-              </form>
-
-              <p class="text-center">
-                <span>Nuevo en nuestra página?</span>
-                <a href="auth-register-basic.html">
-                  <span>Crea una cuenta</span>
-                </a>
-              </p>
-
+<body>
+  <div class="container-xxl">
+    <div class="authentication-wrapper authentication-basic container-p-y">
+      <div class="authentication-inner">
+        <div class="card px-sm-6 px-0">
+          <div class="card-body">
+            <div class="app-brand justify-content-center">
+              <a href="index.html" class="app-brand-link gap-2">
+                <span class="app-brand-logo demo"><span class="text-primary">🔷</span></span>
+                <span class="app-brand-text demo text-heading fw-bold">Salud Total</span>
+              </a>
             </div>
+            <h4 class="mb-1">Bienvenido 👋</h4>
+            <p class="mb-6">Por favor inicia sesión con tus credenciales</p>
+
+            <form id="formAuthentication" class="mb-6">
+              <div class="mb-3">
+                <label for="email" class="form-label">Correo</label>
+                <input type="text" class="form-control" id="email" placeholder="correo@ejemplo.com" required />
+              </div>
+
+              <div class="mb-4 form-password-toggle">
+                <label class="form-label" for="password">Contraseña</label>
+                <div class="input-group input-group-merge">
+                  <input type="password" id="password" class="form-control" placeholder="••••••••" required />
+                  <span class="input-group-text cursor-pointer"><i class="icon-base bx bx-hide"></i></span>
+                </div>
+              </div>
+
+              <button type="submit" class="btn btn-primary w-100">Iniciar sesión</button>
+            </form>
+
+            <p class="text-center">
+              <span>¿Nuevo en la plataforma?</span>
+              <a href="auth-register-basic.html">Crea una cuenta</a>
+            </p>
           </div>
         </div>
       </div>
     </div>
+  </div>
 
-    <!-- JS con rutas absolutas -->
-    <script src="/assets/vendor/libs/jquery/jquery.js"></script>
-    <script src="/assets/vendor/libs/popper/popper.js"></script>
-    <script src="/assets/vendor/js/bootstrap.js"></script>
-    <script src="/assets/vendor/libs/perfect-scrollbar/perfect-scrollbar.js"></script>
-    <script src="/assets/vendor/js/menu.js"></script>
-    <script src="/assets/js/main.js"></script>
+  <!-- JS -->
+  <script src="/assets/vendor/libs/jquery/jquery.js"></script>
+  <script src="/assets/vendor/libs/popper/popper.js"></script>
+  <script src="/assets/vendor/js/bootstrap.js"></script>
+  <script src="/assets/vendor/libs/perfect-scrollbar/perfect-scrollbar.js"></script>
+  <script src="/assets/vendor/js/menu.js"></script>
+  <script src="/assets/js/main.js"></script>
 
-    <!-- Script de login -->
-    <script>
-      document.querySelector('#formAuthentication')?.addEventListener('submit', async function (e) {
-        e.preventDefault();
+  <!-- Script login corregido -->
+  <script>
+    document.getElementById('formAuthentication').addEventListener('submit', async function (e) {
+      e.preventDefault();
 
-        const email = document.querySelector('#email')?.value.trim();
-        const password = document.querySelector('#password')?.value.trim();
+      const email = document.getElementById('email').value.trim();
+      const password = document.getElementById('password').value.trim();
 
-        try {
-          const res = await fetch('http://localhost:3000/login', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ email, password })
-          });
+      try {
+        const response = await fetch('http://localhost:3000/login', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email, password })
+        });
 
-          if (!res.ok) throw new Error('Credenciales incorrectas');
-          const data = await res.json();
+        if (!response.ok) throw new Error('Credenciales inválidas');
 
-          localStorage.setItem('usuario', JSON.stringify(data));
+        const data = await response.json();
 
-          if (data.rol === 'admin') {
-            window.location.href = '/admin/dashboard.html';
-          } else {
-            window.location.href = '/html/home-medico/home.html';
+        localStorage.setItem('usuario', JSON.stringify(data));
 
-          }
-        } catch (err) {
-          alert('Error al iniciar sesión: ' + err.message);
+        // Redirigir sin usar campo rol, usar tipo
+        if (data.tipo === 'admin') {
+          window.location.href = '/admin/dashboard.html';
+        } else if (data.tipo === 'medico') {
+          window.location.href = '/home-medico/home.html';
+        } else {
+          alert('Tipo de usuario no reconocido');
         }
-      });
-    </script>
-  </body>
+
+      } catch (error) {
+        alert('❌ Error al iniciar sesión: ' + error.message);
+      }
+    });
+  </script>
+</body>
 </html>

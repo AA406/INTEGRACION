@@ -89,13 +89,42 @@ async function insertarDatosDePrueba() {
 // Esperar a que la conexión se establezca antes de insertar
 setTimeout(insertarDatosDePrueba, 2000); // Ajusta si la conexión demora más
 
+
+app.get('/perfil', async (req, res) => {
+  try {
+    const medicoId = parseInt(req.query.id);
+    if (isNaN(medicoId)) {
+      return res.status(400).json({ message: 'ID inválido' });
+    }
+
+    const result = await global.oracleConnection.execute(
+      `SELECT M.nombre, M.apellido, M.email, M.est_med, E.nombre AS especialidad
+       FROM MEDICO M
+       LEFT JOIN ESPECIALIDAD E ON M.ESPECIALIDAD_id_especialidad = E.id_especialidad
+       WHERE M.id_med = :id`,
+      [medicoId],
+      { outFormat: oracledb.OBJECT }
+    );
+
+    if (result.rows.length === 0) {
+      return res.status(404).json({ message: 'Médico no encontrado' });
+    }
+
+    res.json(result.rows[0]);
+  } catch (err) {
+    console.error("❌ Error en /perfil:", err);
+    res.status(500).json({ error: err.message });
+  }
+});
+
+
 app.post('/login', async (req, res) => {
   const { email, password } = req.body;
 
   try {
-    // Primero intenta encontrar al usuario en MEDICO
+    // Buscar en MEDICO
     let result = await global.oracleConnection.execute(
-      `SELECT id_med AS id, nombre, email, 'medico' AS rol
+      `SELECT id_med AS id, nombre, email
        FROM MEDICO
        WHERE email = :email AND rut = :password`,
       [email, password],
@@ -103,12 +132,12 @@ app.post('/login', async (req, res) => {
     );
 
     if (result.rows.length > 0) {
-      return res.json(result.rows[0]);
+      return res.json({ ...result.rows[0], tipo: 'medico' });
     }
 
-    // Si no lo encuentra, intenta con ADMINISTRADOR
+    // Buscar en ADMINISTRADOR
     result = await global.oracleConnection.execute(
-      `SELECT id_administrador AS id, nombre, email, 'admin' AS rol
+      `SELECT id_administrador AS id, nombre, email
        FROM ADMINISTRADOR
        WHERE email = :email AND rut = :password`,
       [email, password],
@@ -116,10 +145,9 @@ app.post('/login', async (req, res) => {
     );
 
     if (result.rows.length > 0) {
-      return res.json(result.rows[0]);
+      return res.json({ ...result.rows[0], tipo: 'admin' });
     }
 
-    // Si no se encontró en ninguna tabla
     res.status(401).json({ message: 'Credenciales inválidas' });
 
   } catch (err) {

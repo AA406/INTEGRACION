@@ -1,149 +1,73 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Perfil Médico</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Perfil Médico</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
 </head>
 <body class="bg-light">
-    <nav class="navbar navbar-expand-lg navbar-light bg-white shadow-sm">
-        <div class="container">
-            <a class="navbar-brand" href="#">Inicio</a>
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-            <div class="collapse navbar-collapse" id="navbarNav">
-                <ul class="navbar-nav">
-                    <li class="nav-item">
-                        <a class="nav-link active" href="perfil_medico.html">Perfil Médico</a>
-                    </li>
-                </ul>
-            </div>
-        </div>
-    </nav>
-    <div class="container mt-5">
-        <div class="card shadow-sm">
-            <div class="card-body text-center position-relative">
-                <button id="editar-btn" class="btn btn-primary position-absolute top-0 end-0 m-3">Editar</button>
-                <label for="foto-upload" class="d-block">
-                    <img src="ruta_de_la_foto.jpg" alt="Foto del Médico" id="foto-medico" class="rounded-circle img-thumbnail mb-3" style="width: 150px; height: 150px; object-fit: cover; cursor: pointer;">
-                </label>
-                <input type="file" id="foto-upload" class="d-none" accept="image/*">
-                <input type="text" id="nombre-medico" class="form-control text-center fw-bold mb-3" value="Nombre del Médico" disabled>
-            </div>
-            <div class="card-body">
-                <h2 class="text-primary">Información Personal</h2>
-                <form>
-                    <div class="mb-3">
-                        <label for="telefono-medico" class="form-label"><strong>Teléfono:</strong></label>
-                        <input type="text" id="telefono-medico" class="form-control" value="912345678" disabled>
-                    </div>
-                    <div class="mb-3">
-                        <label for="edad-medico" class="form-label"><strong>Edad:</strong></label>
-                        <input type="number" id="edad-medico" class="form-control" value="35" disabled>
-                    </div>
-                    <div class="mb-3">
-                        <label for="residencia-medico" class="form-label"><strong>Residencia:</strong></label>
-                        <input type="text" id="residencia-medico" class="form-control" value="Ciudad" disabled>
-                    </div>
-                </form>
-                <h2 class="text-primary mt-4">Certificados</h2>
-                <ul id="certificados-medico" class="list-group">
-                    <li class="list-group-item">Certificado en Medicina General</li>
-                    <li class="list-group-item">Especialización en Cardiología</li>
-                </ul>
-            </div>
-        </div>
+  <nav class="navbar navbar-expand-lg navbar-light bg-white shadow-sm">
+    <div class="container">
+      <a class="navbar-brand" href="/home-medico/home.html">Inicio</a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarNav">
+        <ul class="navbar-nav">
+          <li class="nav-item">
+            <a class="nav-link active" href="perfil_medico.html">Perfil Médico</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="comentarios.html">Comentarios</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="permiso.html">Permisos</a>
+          </li>
+        </ul>
+      </div>
     </div>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-    <script>
-        // Cargar datos del perfil médico al cargar la página
-        async function cargarPerfil() {
-            try {
-                const response = await fetch('http://localhost:3000/perfil'); // Solicita los datos al servidor
-                if (!response.ok) {
-                    throw new Error('Error al obtener los datos del perfil');
-                }
-                const perfil = await response.json();
+  </nav>
 
-                if (perfil) {
-                    document.getElementById('nombre-medico').value = perfil.nombre || '';
-                    document.getElementById('telefono-medico').value = perfil.telefono || '';
-                    document.getElementById('edad-medico').value = perfil.edad || '';
-                    document.getElementById('residencia-medico').value = perfil.residencia || '';
-                    document.getElementById('foto-medico').src = perfil.foto || 'ruta_de_la_foto.jpg';
-                }
-            } catch (error) {
-                console.error('Error al cargar el perfil:', error);
-            }
-        }
+  <div class="container mt-5">
+    <div class="card shadow-sm">
+      <div class="card-body text-center">
+        <h2 class="text-primary mb-4">Perfil del Médico</h2>
+        <p><strong>Nombre completo:</strong> <span id="nombre-completo">Cargando...</span></p>
+        <p><strong>Email:</strong> <span id="email">Cargando...</span></p>
+        <p><strong>Estado:</strong> <span id="estado">Cargando...</span></p>
+        <p><strong>Especialidad:</strong> <span id="especialidad">Cargando...</span></p>
+      </div>
+    </div>
+  </div>
 
-        // Llamar a la función al cargar la página
-        window.onload = cargarPerfil;
+  <script>
+    async function cargarPerfil() {
+      const usuario = JSON.parse(localStorage.getItem('usuario'));
+      if (!usuario || usuario.tipo !== 'medico') {
+        alert("Acceso denegado");
+        window.location.href = "/inicio/auth-login-basic.html";
+        return;
+      }
 
-        // Botón que permite editar los datos
-        document.getElementById('editar-btn').addEventListener('click', async (event) => {
-            const inputs = document.querySelectorAll('form input, #nombre-medico');
-            const telefonoInput = document.getElementById('telefono-medico');
-            const isEditing = inputs[0].disabled === false; // Verifica si ya está en modo edición
+      try {
+        const res = await fetch(`http://localhost:3000/perfil?id=${usuario.id}`);
+        if (!res.ok) throw new Error("No se pudo cargar el perfil");
 
-            if (isEditing) {
-                // Validación de número de teléfono al guardar
-                const telefono = telefonoInput.value;
-                if (!/^9\d{8}$/.test(telefono)) { // Verifica que comience con 9 y tenga exactamente 9 dígitos
-                    alert("El número de teléfono es incorrecto. Debe comenzar con 9 y tener exactamente 9 dígitos.");
-                    return; // Detiene el cambio de estado si el número es inválido
-                }
+        const perfil = await res.json();
+        document.getElementById('nombre-completo').textContent = `${perfil.nombre} ${perfil.apellido}`;
+        document.getElementById('email').textContent = perfil.email || 'No disponible';
+        document.getElementById('estado').textContent = perfil.est_med == 1 ? 'Activo' : 'Inactivo';
+        document.getElementById('especialidad').textContent = perfil.especialidad || 'No especificada';
+      } catch (err) {
+        console.error("Error al cargar perfil:", err);
+        alert("No se pudo cargar el perfil");
+      }
+    }
 
-                // Guardar cambios en el servidor
-                const perfil = {
-                    nombre: document.getElementById('nombre-medico').value,
-                    telefono: telefonoInput.value,
-                    edad: document.getElementById('edad-medico').value,
-                    residencia: document.getElementById('residencia-medico').value,
-                    foto: document.getElementById('foto-medico').src
-                };
+    window.onload = cargarPerfil;
+  </script>
 
-                try {
-                    const response = await fetch('http://localhost:3000/perfil', {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify(perfil)
-                    });
-                    if (!response.ok) {
-                        throw new Error('Error al guardar los datos del perfil');
-                    }
-                    const result = await response.json();
-                    alert(result.message);
-                } catch (error) {
-                    console.error('Error al guardar el perfil:', error);
-                }
-            }
-
-            inputs.forEach(input => input.disabled = isEditing); // Alterna el estado de los campos
-            event.target.textContent = isEditing ? 'Editar' : 'Guardar'; // Cambia el texto del botón
-        });
-
-        // Agregar Foto Perfil Médico
-        document.getElementById('foto-upload').addEventListener('change', (event) => {
-            const file = event.target.files[0];
-            if (file) {
-                const reader = new FileReader();
-                reader.onload = (e) => {
-                    document.getElementById('foto-medico').src = e.target.result;
-                };
-                reader.readAsDataURL(file);
-            }
-        });
-
-        // Validación del número de teléfono
-        document.getElementById('telefono-medico').addEventListener('input', (event) => {
-            const input = event.target;
-            if (input.value.length > 9) {
-                input.value = input.value.slice(0, 9); // Limita el número a 9 dígitos
-            }
-        });
-    </script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
