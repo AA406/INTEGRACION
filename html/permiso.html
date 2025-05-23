@@ -4,7 +4,9 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Solicitud de Permiso de Ausencia</title>
-  <link rel="stylesheet" href="../dist/css/core.css" />
+  <link rel="stylesheet" href="/css/core.css" />
+
+
 </head>
 <body>
   <nav class="layout-navbar navbar navbar-expand-lg bg-white">
@@ -58,79 +60,82 @@
     </div>
   </div>
 
-  <script>
-    function cargarPermisos() {
-      const idMedico = parseInt(document.getElementById('MEDICO_id_med').value);
+<!-- ... encabezado HTML igual ... -->
 
-      fetch('http://localhost:3000/permisos')
-        .then(response => response.json())
-        .then(data => {
-          const tbody = document.getElementById('tabla-permisos').querySelector('tbody');
-          tbody.innerHTML = '';
+<script>
+  function cargarPermisos() {
+    const idMedico = parseInt(document.getElementById('MEDICO_id_med').value);
 
-          const permisosMedico = data.filter(p => p.MEDICO_ID_MED === idMedico);
+    fetch('http://localhost:3000/permisos')  // ✅ RUTA CORRECTA PARA OBTENER PERMISOS
+      .then(response => response.json())
+      .then(data => {
+        const tbody = document.getElementById('tabla-permisos').querySelector('tbody');
+        tbody.innerHTML = '';
 
-          if (permisosMedico.length === 0) {
-            tbody.innerHTML = '<tr><td colspan="5" class="text-center">No hay permisos registrados.</td></tr>';
-            return;
-          }
+        const permisosMedico = data.filter(p => p.MEDICO_ID_MED === idMedico);
 
-          permisosMedico.forEach(p => {
-            const fila = `
-              <tr>
-                <td>${p.ID_PERMISO}</td>
-                <td>${p.TIPO}</td>
-                <td>${p.FECHA_INICIO}</td>
-                <td>${p.FECHA_FIN}</td>
-                <td>${p.ESTADO}</td>
-              </tr>
-            `;
-            tbody.innerHTML += fila;
-          });
-        })
-        .catch(error => {
-          console.error('Error al cargar permisos:', error);
+        if (permisosMedico.length === 0) {
+          tbody.innerHTML = '<tr><td colspan="5" class="text-center">No hay permisos registrados.</td></tr>';
+          return;
+        }
+
+        permisosMedico.forEach(p => {
+          const fila = `
+            <tr>
+              <td>${p.ID_PERMISO}</td>
+              <td>${p.TIPO}</td>
+              <td>${p.FECHA_INICIO}</td>
+              <td>${p.FECHA_FIN}</td>
+              <td>${p.ESTADO}</td>
+            </tr>
+          `;
+          tbody.innerHTML += fila;
         });
-    }
-
-    document.getElementById('permiso-form').addEventListener('submit', function (e) {
-      e.preventDefault();
-
-      const data = {
-        id_permiso: Date.now(),
-        tipo: document.getElementById('tipo').value,
-        fecha_inicio: document.getElementById('fecha_inicio').value,
-        fecha_fin: document.getElementById('fecha_fin').value,
-        estado: 'Pendiente',
-        MEDICO_id_med: parseInt(document.getElementById('MEDICO_id_med').value)
-      };
-
-      fetch('http://localhost:3000/api/solicitar_permiso', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(data)
       })
-        .then(response => {
-          if (response.ok) {
-            document.getElementById('mensaje').innerHTML =
-              '<div class="alert alert-success">✅ Solicitud enviada exitosamente.</div>';
-            document.getElementById('permiso-form').reset();
-            cargarPermisos(); // Refrescar tabla
-          } else {
-            document.getElementById('mensaje').innerHTML =
-              '<div class="alert alert-danger">❌ Error al enviar la solicitud.</div>';
-          }
-        })
-        .catch(error => {
-          console.error('Error:', error);
+      .catch(error => {
+        console.error('Error al cargar permisos:', error);
+      });
+  }
+
+  document.getElementById('permiso-form').addEventListener('submit', function (e) {
+    e.preventDefault();
+
+    const data = {
+      id_permiso: Date.now(), // ID único generado por timestamp
+      tipo: document.getElementById('tipo').value,
+      fecha_inicio: document.getElementById('fecha_inicio').value,
+      fecha_fin: document.getElementById('fecha_fin').value,
+      estado: 'Pendiente',
+      MEDICO_id_med: parseInt(document.getElementById('MEDICO_id_med').value)
+    };
+
+    fetch('http://localhost:3000/permisos', {  // ✅ RUTA CORRECTA PARA CREAR PERMISO
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(data)
+    })
+      .then(response => {
+        if (response.ok) {
+          document.getElementById('mensaje').innerHTML =
+            '<div class="alert alert-success">✅ Solicitud enviada exitosamente.</div>';
+          document.getElementById('permiso-form').reset();
+          cargarPermisos(); // Refrescar tabla
+        } else {
           document.getElementById('mensaje').innerHTML =
             '<div class="alert alert-danger">❌ Error al enviar la solicitud.</div>';
-        });
-    });
+        }
+      })
+      .catch(error => {
+        console.error('Error:', error);
+        document.getElementById('mensaje').innerHTML =
+          '<div class="alert alert-danger">❌ Error al enviar la solicitud.</div>';
+      });
+  });
 
-    window.addEventListener('DOMContentLoaded', cargarPermisos);
-  </script>
+  window.addEventListener('DOMContentLoaded', cargarPermisos);
+</script>
+
 </body>
 </html>

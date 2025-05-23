@@ -13,8 +13,13 @@ app.use(bodyParser.json({ limit: '10mb' }));
 app.use(bodyParser.urlencoded({ limit: '10mb', extended: true }));
 
 // Servir archivos estáticos desde la carpeta "html"
-app.use(express.static(path.join(__dirname, '../html')));
 app.use(express.static(path.join(__dirname, '../dist')));
+app.use('/assets', express.static(path.join(__dirname, '../assets')));
+app.use(express.static(path.join(__dirname, '../html')));
+
+app.get('/', (req, res) => {
+  res.sendFile(path.join(__dirname, '../html/inicio/auth-login-basic.html'));
+});
 
 // Conexión a Oracle Wallet
 async function conectarOracle() {
@@ -43,6 +48,86 @@ async function conectarOracle() {
 }
 
 conectarOracle();
+
+async function insertarDatosDePrueba() {
+  try {
+    // Insertar Médico de prueba
+    await global.oracleConnection.execute(
+      `INSERT INTO MEDICO (id_med, rut, nombre, apellido, email, est_med, ESPECIALIDAD_id_especialidad)
+       VALUES (:id, :rut, :nombre, :apellido, :email, :estado, :especialidad)`,
+      {
+        id: 1,
+        rut: 'med123', // será la contraseña
+        nombre: 'Juan',
+        apellido: 'Prueba',
+        email: 'medico@test.com',
+        estado: 'activo',
+        especialidad: 1 // asegúrate que existe
+      },
+      { autoCommit: true }
+    );
+
+    // Insertar Administrador de prueba
+    await global.oracleConnection.execute(
+      `INSERT INTO ADMINISTRADOR (id_administrador, rut, email, nombre)
+       VALUES (:id, :rut, :email, :nombre)`,
+      {
+        id: 1,
+        rut: 'admin123', // será la contraseña
+        email: 'admin@test.com',
+        nombre: 'Admin'
+      },
+      { autoCommit: true }
+    );
+
+    console.log('Médico y Administrador insertados correctamente.');
+  } catch (error) {
+    console.error('Error al insertar datos de prueba:', error.message);
+  }
+}
+
+// Esperar a que la conexión se establezca antes de insertar
+setTimeout(insertarDatosDePrueba, 2000); // Ajusta si la conexión demora más
+
+app.post('/login', async (req, res) => {
+  const { email, password } = req.body;
+
+  try {
+    // Primero intenta encontrar al usuario en MEDICO
+    let result = await global.oracleConnection.execute(
+      `SELECT id_med AS id, nombre, email, 'medico' AS rol
+       FROM MEDICO
+       WHERE email = :email AND rut = :password`,
+      [email, password],
+      { outFormat: oracledb.OBJECT }
+    );
+
+    if (result.rows.length > 0) {
+      return res.json(result.rows[0]);
+    }
+
+    // Si no lo encuentra, intenta con ADMINISTRADOR
+    result = await global.oracleConnection.execute(
+      `SELECT id_administrador AS id, nombre, email, 'admin' AS rol
+       FROM ADMINISTRADOR
+       WHERE email = :email AND rut = :password`,
+      [email, password],
+      { outFormat: oracledb.OBJECT }
+    );
+
+    if (result.rows.length > 0) {
+      return res.json(result.rows[0]);
+    }
+
+    // Si no se encontró en ninguna tabla
+    res.status(401).json({ message: 'Credenciales inválidas' });
+
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+
 
 // ------------------------------------
 // RUTAS PARA TABLA MEDICO
