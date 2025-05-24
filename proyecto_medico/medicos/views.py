@@ -10,7 +10,7 @@ from .serializers import (
     ObservacionesMedicoSerializer
 )
 
-# Vistas tipo ViewSet para CRUD automático
+# CRUD automático con ViewSets
 
 class MedicoViewSet(viewsets.ModelViewSet):
     queryset = Medico.objects.all()
@@ -32,7 +32,13 @@ class ObservacionesMedicoViewSet(viewsets.ModelViewSet):
     queryset = ObservacionesMedico.objects.all()
     serializer_class = ObservacionesMedicoSerializer
 
-# API login (como en tu Node.js)
+    def get_queryset(self):
+        id_medico = self.request.query_params.get('id_med')
+        if id_medico:
+            return ObservacionesMedico.objects.filter(medico_fk=id_medico)
+        return ObservacionesMedico.objects.all()
+
+# Login (valida email y RUT como contraseña)
 
 @api_view(['POST'])
 def login_view(request):
@@ -58,3 +64,24 @@ def login_view(request):
         })
 
     return Response({'message': 'Credenciales inválidas'}, status=status.HTTP_401_UNAUTHORIZED)
+
+# Perfil de médico por ID
+
+@api_view(['GET'])
+def perfil_medico(request):
+    id_medico = request.GET.get('id')
+    if not id_medico:
+        return Response({'error': 'ID no proporcionado'}, status=400)
+
+    try:
+        medico = Medico.objects.select_related('especialidad').get(id_med=id_medico)
+        data = {
+            'nombre': medico.nombre,
+            'apellido': medico.apellido,
+            'email': medico.email,
+            'est_med': medico.est_med,
+            'especialidad': medico.especialidad.nombre if medico.especialidad else 'No especificada'
+        }
+        return Response(data)
+    except Medico.DoesNotExist:
+        return Response({'error': 'Médico no encontrado'}, status=404)

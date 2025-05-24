@@ -5,13 +5,12 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Comentarios para el Médico</title>
 
-  <!-- Estilos base -->
-  <link rel="stylesheet" href="../../dist/css/core.css" />
-  <link rel="stylesheet" href="../dist/css/libs/perfect-scrollbar.css" />
-  <link rel="stylesheet" href="../dist/css/pages/page-auth.css" />
-  <link rel="stylesheet" href="../dist/css/pages/page-icons.css" />
-  <link rel="stylesheet" href="../dist/css/pages/page-misc.css" />
-  <link rel="stylesheet" href="../dist/css/fonts/boxicons.css" />
+  <link rel="stylesheet" href="/static/vendor/css/core.css" />
+  <link rel="stylesheet" href="/static/vendor/libs/perfect-scrollbar/perfect-scrollbar.css" />
+  <link rel="stylesheet" href="/static/vendor/css/pages/page-auth.css" />
+  <link rel="stylesheet" href="/static/vendor/css/pages/page-icons.css" />
+  <link rel="stylesheet" href="/static/vendor/css/pages/page-misc.css" />
+  <link rel="stylesheet" href="/static/vendor/fonts/boxicons.css" />
   <style>
     pre {
       background: #272822;
@@ -51,7 +50,7 @@
                     <tr>
                       <th>Paciente</th>
                       <th>Comentario</th>
-                      <th>Fecha</th>
+                      <th>ID Médico</th>
                     </tr>
                   </thead>
                   <tbody id="comentarios-body">
@@ -68,29 +67,42 @@
   </div>
 
   <!-- Scripts base -->
-  <script src="../dist/js/jquery.js"></script>
-  <script src="../dist/js/popper.js"></script>
-  <script src="../dist/js/bootstrap.js"></script>
-  <script src="../dist/js/menu.js"></script>
-  <script src="../dist/js/helpers.js"></script>
-  <script src="../dist/js/libs/perfect-scrollbar.js"></script>
+  <script src="/static/vendor/libs/jquery/jquery.js"></script>
+  <script src="/static/vendor/libs/popper/popper.js"></script>
+  <script src="/static/vendor/js/bootstrap.js"></script>
+  <script src="/static/vendor/js/menu.js"></script>
+  <script src="/static/vendor/js/helpers.js"></script>
+  <script src="/static/vendor/libs/perfect-scrollbar/perfect-scrollbar.js"></script>
 
-<script>
-  fetch("http://localhost:5000/api/comentarios")
-    .then(res => res.json())
-    .then(data => {
-      const tbody = document.getElementById("comentarios-body");
-      tbody.innerHTML = "";
-      data.forEach(c => {
-        const tr = document.createElement("tr");
-        tr.innerHTML = `<td>${c.paciente}</td><td>${c.comentario}</td><td>${c.fecha}</td>`;
-        tbody.appendChild(tr);
-      });
-    })
-    .catch(err => {
-      document.getElementById("comentarios-body").innerHTML = 
-        '<tr><td colspan="3" class="text-danger">Error al cargar comentarios</td></tr>';
-      console.error("Error:", err);
-    });
-</script>
+  <script>
+    const usuario = JSON.parse(localStorage.getItem("usuario"));
+    if (!usuario || usuario.tipo !== "medico") {
+      alert("Acceso no autorizado");
+      window.location.href = "/inicio/auth-login-basic.html";
+    } else {
+      fetch("http://127.0.0.1:8000/api/observaciones/")
+        .then(res => res.json())
+        .then(data => {
+          const tbody = document.getElementById("comentarios-body");
+          tbody.innerHTML = "";
+          const comentarios = data.filter(c => c.MEDICO_id_med == usuario.id);
 
+          if (comentarios.length === 0) {
+            tbody.innerHTML = '<tr><td colspan="3" class="text-muted">Sin comentarios aún.</td></tr>';
+          }
+
+          comentarios.forEach(c => {
+            const tr = document.createElement("tr");
+            tr.innerHTML = `<td>${c.medico}</td><td>${c.observaciones}</td><td>${c.MEDICO_id_med}</td>`;
+            tbody.appendChild(tr);
+          });
+        })
+        .catch(err => {
+          document.getElementById("comentarios-body").innerHTML =
+            '<tr><td colspan="3" class="text-danger">Error al cargar comentarios</td></tr>';
+          console.error("Error:", err);
+        });
+    }
+  </script>
+</body>
+</html>

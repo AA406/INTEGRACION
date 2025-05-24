@@ -69,37 +69,42 @@
   <script src="/static/vendor/js/menu.js"></script>
   <script src="/static/js/main.js"></script>
 
-  <!-- Script login corregido para Django -->
+  <!-- Script login corregido con DOMContentLoaded -->
   <script>
-    document.getElementById('formAuthentication').addEventListener('submit', async function (e) {
-      e.preventDefault();
+    document.addEventListener('DOMContentLoaded', function () {
+      const form = document.getElementById('formAuthentication');
 
-      const email = document.getElementById('email').value.trim();
-      const password = document.getElementById('password').value.trim();
+      form.addEventListener('submit', async function (e) {
+        e.preventDefault();
 
-      try {
-        const response = await fetch('http://localhost:8000/api/login/', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ email, password })
-        });
+        const email = document.getElementById('email').value.trim();
+        const password = document.getElementById('password').value.trim();
 
-        if (!response.ok) throw new Error('Credenciales inválidas');
+        try {
+          const response = await fetch('http://127.0.0.1:8000/api/login/', {
 
-        const data = await response.json();
-        localStorage.setItem('usuario', JSON.stringify(data));
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ email, password })
+          });
 
-        if (data.tipo === 'admin') {
-          window.location.href = '/admin/dashboard.html';
-        } else if (data.tipo === 'medico') {
-          window.location.href = '/home-medico/home.html?id=' + data.id;
-        } else {
-          alert('Tipo de usuario no reconocido');
+          if (!response.ok) throw new Error('Credenciales inválidas');
+
+          const data = await response.json();
+          localStorage.setItem('usuario', JSON.stringify(data));
+
+          if (data.tipo === 'admin') {
+            window.location.href = '/admin/dashboard.html';
+          } else if (data.tipo === 'medico') {
+            window.location.href = '/home-medico/home.html?id=' + data.id;
+          } else {
+            alert('Tipo de usuario no reconocido');
+          }
+
+        } catch (error) {
+          alert('❌ Error al iniciar sesión: ' + error.message);
         }
-
-      } catch (error) {
-        alert('❌ Error al iniciar sesión: ' + error.message);
-      }
+      });
     });
   </script>
 </body>
