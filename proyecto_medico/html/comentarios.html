@@ -3,64 +3,117 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Comentarios para el Médico</title>
+  <title>Agenda Médica</title>
 
+  <!-- Estilos de Sneat -->
   <link rel="stylesheet" href="/static/vendor/css/core.css" />
   <link rel="stylesheet" href="/static/vendor/libs/perfect-scrollbar/perfect-scrollbar.css" />
   <link rel="stylesheet" href="/static/vendor/css/pages/page-auth.css" />
-  <link rel="stylesheet" href="/static/vendor/css/pages/page-icons.css" />
-  <link rel="stylesheet" href="/static/vendor/css/pages/page-misc.css" />
   <link rel="stylesheet" href="/static/vendor/fonts/boxicons.css" />
+
   <style>
-    pre {
-      background: #272822;
-      color: #f8f8f2;
-      padding: 1em;
-      border-radius: 5px;
-      overflow-x: auto;
-      font-size: 0.85rem;
+    body {
+      background-color: #f8f9fa;
+    }
+
+    .navbar {
+      box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+    }
+
+    .navbar .navbar-brand {
+      font-weight: bold;
+      color: #0d6efd !important;
+    }
+
+    .card {
+      border-radius: 0.75rem;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    }
+
+    .card-title {
+      margin: 0;
+      color: #0d6efd;
+    }
+
+    h1 {
+      color: #0d6efd;
+    }
+
+    .table thead {
+      background-color: #f1f3f4;
+    }
+
+    .fecha-actual {
+      text-align: right;
+      font-weight: 500;
+      color: #6c757d;
     }
   </style>
 </head>
 <body>
-  <!-- Navbar básica -->
-  <nav class="layout-navbar navbar navbar-expand-lg bg-white">
-    <div class="container-fluid">
-      <span class="navbar-brand text-primary fw-bold">Panel del Médico</span>
+
+  <!-- Navbar -->
+  <nav class="navbar navbar-expand-lg bg-white mb-4">
+    <div class="container">
+      <span class="navbar-brand">Agenda del Médico</span>
     </div>
   </nav>
 
-  <div class="layout-wrapper layout-content-navbar">
-    <div class="layout-container">
-      <div class="layout-page">
-        <div class="content-wrapper">
-          <div class="container-xxl flex-grow-1 container-p-y">
+  <!-- Contenido principal -->
+  <div class="container-xxl">
+    <div class="fecha-actual mb-3" id="fechaActual"></div>
 
-            <h1 class="text-primary mb-4">Comentarios de Pacientes</h1>
-            <p class="text-muted mb-4">A continuación se muestran los comentarios que tus pacientes han dejado sobre tu atención.</p>
+    <h1 class="mb-3">Citas Médicas del Día</h1>
+    <p class="text-muted mb-4">Estas son las citas agendadas para el día actual con los pacientes asignados.</p>
 
-            <!-- Comentarios cargados dinámicamente -->
-            <div class="card mb-4">
-              <div class="card-header">
-                <h5 class="card-title">Comentarios Recientes</h5>
-              </div>
-              <div class="card-body">
-                <table class="table">
-                  <thead>
-                    <tr>
-                      <th>Paciente</th>
-                      <th>Comentario</th>
-                      <th>ID Médico</th>
-                    </tr>
-                  </thead>
-                  <tbody id="comentarios-body">
-                    <tr><td colspan="3" class="text-muted">Cargando comentarios...</td></tr>
-                  </tbody>
-                </table>
-              </div>
-            </div>
-
-          </div>
+    <div class="card">
+      <div class="card-header bg-white">
+        <h5 class="card-title">Agenda Diaria</h5>
+      </div>
+      <div class="card-body">
+        <div class="table-responsive">
+          <table class="table align-middle">
+            <thead>
+              <tr>
+                <th>Hora</th>
+                <th>Paciente</th>
+                <th>Motivo</th>
+                <th>Observaciones</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>08:00</td>
+                <td>Juan Pérez</td>
+                <td>Consulta general</td>
+                <td>Control anual</td>
+              </tr>
+              <tr>
+                <td>09:00</td>
+                <td>María González</td>
+                <td>Revisión</td>
+                <td>Post operatorio</td>
+              </tr>
+              <tr>
+                <td>10:00</td>
+                <td>Carlos Ruiz</td>
+                <td>Chequeo</td>
+                <td>Presión alta</td>
+              </tr>
+              <tr>
+                <td>11:30</td>
+                <td>Lucía Fernández</td>
+                <td>Consulta</td>
+                <td>Resultados de exámenes</td>
+              </tr>
+              <tr>
+                <td>13:00</td>
+                <td>Diego Soto</td>
+                <td>Evaluación médica</td>
+                <td>Dolor abdominal</td>
+              </tr>
+            </tbody>
+          </table>
         </div>
       </div>
     </div>
@@ -75,34 +128,10 @@
   <script src="/static/vendor/libs/perfect-scrollbar/perfect-scrollbar.js"></script>
 
   <script>
-    const usuario = JSON.parse(localStorage.getItem("usuario"));
-    if (!usuario || usuario.tipo !== "medico") {
-      alert("Acceso no autorizado");
-      window.location.href = "/inicio/auth-login-basic.html";
-    } else {
-      fetch("http://127.0.0.1:8000/api/observaciones/")
-        .then(res => res.json())
-        .then(data => {
-          const tbody = document.getElementById("comentarios-body");
-          tbody.innerHTML = "";
-          const comentarios = data.filter(c => c.MEDICO_id_med == usuario.id);
-
-          if (comentarios.length === 0) {
-            tbody.innerHTML = '<tr><td colspan="3" class="text-muted">Sin comentarios aún.</td></tr>';
-          }
-
-          comentarios.forEach(c => {
-            const tr = document.createElement("tr");
-            tr.innerHTML = `<td>${c.medico}</td><td>${c.observaciones}</td><td>${c.MEDICO_id_med}</td>`;
-            tbody.appendChild(tr);
-          });
-        })
-        .catch(err => {
-          document.getElementById("comentarios-body").innerHTML =
-            '<tr><td colspan="3" class="text-danger">Error al cargar comentarios</td></tr>';
-          console.error("Error:", err);
-        });
-    }
+    // Mostrar fecha actual en la parte superior derecha
+    const fecha = new Date();
+    const opciones = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+    document.getElementById('fechaActual').textContent = fecha.toLocaleDateString('es-ES', opciones);
   </script>
 </body>
 </html>
