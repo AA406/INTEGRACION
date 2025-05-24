@@ -1,22 +1,22 @@
 <!doctype html>
-<html lang="es" class="layout-wide customizer-hide" data-assets-path="/assets/" data-template="vertical-menu-template-free">
+<html lang="es" class="layout-wide customizer-hide" data-assets-path="/static/" data-template="vertical-menu-template-free">
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0" />
   <title>Salud Total - Iniciar sesión</title>
 
-  <link rel="icon" type="image/x-icon" href="/assets/img/logo/logo.jpg" />
+  <link rel="icon" type="image/x-icon" href="/static/img/logo/logo.jpg" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Public+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="/assets/vendor/fonts/iconify-icons.css" />
-  <link rel="stylesheet" href="/assets/vendor/css/core.css" />
-  <link rel="stylesheet" href="/assets/css/demo.css" />
-  <link rel="stylesheet" href="/assets/vendor/libs/perfect-scrollbar/perfect-scrollbar.css" />
-  <link rel="stylesheet" href="/assets/vendor/css/pages/page-auth.css" />
+  <link rel="stylesheet" href="/static/vendor/fonts/iconify-icons.css" />
+  <link rel="stylesheet" href="/static/vendor/css/core.css" />
+  <link rel="stylesheet" href="/static/css/demo.css" />
+  <link rel="stylesheet" href="/static/vendor/libs/perfect-scrollbar/perfect-scrollbar.css" />
+  <link rel="stylesheet" href="/static/vendor/css/pages/page-auth.css" />
 
-  <script src="/assets/vendor/js/helpers.js"></script>
-  <script src="/assets/js/config.js"></script>
+  <script src="/static/vendor/js/helpers.js"></script>
+  <script src="/static/js/config.js"></script>
 </head>
 
 <body>
@@ -62,14 +62,14 @@
   </div>
 
   <!-- JS -->
-  <script src="/assets/vendor/libs/jquery/jquery.js"></script>
-  <script src="/assets/vendor/libs/popper/popper.js"></script>
-  <script src="/assets/vendor/js/bootstrap.js"></script>
-  <script src="/assets/vendor/libs/perfect-scrollbar/perfect-scrollbar.js"></script>
-  <script src="/assets/vendor/js/menu.js"></script>
-  <script src="/assets/js/main.js"></script>
+  <script src="/static/vendor/libs/jquery/jquery.js"></script>
+  <script src="/static/vendor/libs/popper/popper.js"></script>
+  <script src="/static/vendor/js/bootstrap.js"></script>
+  <script src="/static/vendor/libs/perfect-scrollbar/perfect-scrollbar.js"></script>
+  <script src="/static/vendor/js/menu.js"></script>
+  <script src="/static/js/main.js"></script>
 
-  <!-- Script login corregido -->
+  <!-- Script login corregido para Django -->
   <script>
     document.getElementById('formAuthentication').addEventListener('submit', async function (e) {
       e.preventDefault();
@@ -78,7 +78,7 @@
       const password = document.getElementById('password').value.trim();
 
       try {
-        const response = await fetch('http://localhost:3000/login', {
+        const response = await fetch('http://localhost:8000/api/login/', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ email, password })
@@ -87,14 +87,12 @@
         if (!response.ok) throw new Error('Credenciales inválidas');
 
         const data = await response.json();
-
         localStorage.setItem('usuario', JSON.stringify(data));
 
-        // Redirigir sin usar campo rol, usar tipo
         if (data.tipo === 'admin') {
           window.location.href = '/admin/dashboard.html';
         } else if (data.tipo === 'medico') {
-          window.location.href = '/home-medico/home.html';
+          window.location.href = '/home-medico/home.html?id=' + data.id;
         } else {
           alert('Tipo de usuario no reconocido');
         }
