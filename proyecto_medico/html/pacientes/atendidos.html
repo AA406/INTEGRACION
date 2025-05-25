@@ -1,0 +1,516 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Pacientes Atendidos</title>
+  <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.8.2/angular.min.js"></script>
+  <style>
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      margin: 0;
+      padding: 0;
+      background-color: #f4f5f8;
+    }
+    
+    .visualizar-container {
+      display: flex;
+      flex-direction: column;
+      padding: 1rem;
+      height: 100vh;
+      box-sizing: border-box;
+    }
+    
+    .header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1rem;
+    }
+    
+    .header h2 {
+      font-size: 1.5rem;
+      color: #2c3e50;
+      margin: 0;
+    }
+    
+    .counter {
+      background: #4caf50;
+      color: white;
+      padding: 0.4rem 1rem;
+      border-radius: 20px;
+      font-weight: bold;
+      font-size: 0.9rem;
+    }
+    
+    .filtros-container {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 1rem;
+      margin-bottom: 1rem;
+      background: white;
+      padding: 1rem;
+      border-radius: 8px;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+    }
+    
+    .filtro-group {
+      display: flex;
+      flex-direction: column;
+      min-width: 180px;
+    }
+    
+    .filtro-group label {
+      margin-bottom: 0.5rem;
+      font-weight: 500;
+      color: #555;
+    }
+    
+    .filtro-group select, 
+    .filtro-group input {
+      padding: 0.6rem;
+      border: 1px solid #ddd;
+      border-radius: 6px;
+      font-size: 0.9rem;
+    }
+    
+    .search-bar {
+      margin-bottom: 1rem;
+    }
+    
+    .search-bar input {
+      width: 100%;
+      padding: 0.8rem;
+      border: 1px solid #ddd;
+      border-radius: 8px;
+      font-size: 1rem;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+      box-sizing: border-box;
+    }
+    
+    .listado {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+      max-height: calc(100vh - 250px);
+      overflow-y: auto;
+      padding-right: 5px;
+    }
+    
+    .paciente-card {
+      background: white;
+      border-radius: 12px;
+      padding: 1rem;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+    }
+    
+    .info-principal {
+      display: flex;
+      justify-content: space-between;
+      font-weight: bold;
+      font-size: 1.1rem;
+      color: #2c3e50;
+    }
+    
+    .estado {
+      padding: 0.2rem 0.5rem;
+      border-radius: 12px;
+      font-size: 0.8rem;
+      font-weight: bold;
+    }
+    
+    .estado-atendido {
+      background-color: #4caf50;
+      color: white;
+    }
+    
+    .estado-pendiente {
+      background-color: #ff9800;
+      color: white;
+    }
+    
+    .info-detalles {
+      font-size: 0.9rem;
+      color: #555;
+      display: flex;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+    }
+    
+    .info-detalles div {
+      flex: 1;
+      min-width: 150px;
+    }
+    
+    .doctor-tag {
+      padding: 0.2rem 0.5rem;
+      border-radius: 12px;
+      font-size: 0.8rem;
+      font-weight: bold;
+      color: white;
+    }
+    
+    .doctor-1 { background-color: #3f51b5; } /* Cardiología */
+    .doctor-2 { background-color: #009688; } /* Pediatría */
+    .doctor-3 { background-color: #ff5722; } /* Traumatología */
+    .doctor-4 { background-color: #9c27b0; } /* Neurología */
+    .doctor-5 { background-color: #607d8b; } /* Medicina General */
+    
+    .sexo-icon {
+      font-size: 0.9rem;
+      margin-right: 0.3rem;
+    }
+    
+    .hombre { color: #2196f3; }
+    .mujer { color: #e91e63; }
+  </style>
+</head>
+<body ng-app="pacienteApp" ng-controller="VisualizarController as vm">
+  <div class="visualizar-container">
+    <div class="header">
+      <h2>Pacientes Atendidos</h2>
+      <span class="counter">{{ vm.pacientesFiltrados.length }} pacientes</span>
+    </div>
+  
+    <div class="filtros-container">
+      <!-- Filtro por especialidad -->
+      <div class="filtro-group">
+        <label for="especialidad">Especialidad</label>
+        <select id="especialidad" ng-model="vm.filtros.especialidad" ng-change="vm.aplicarFiltros()">
+          <option value="">Todas las especialidades</option>
+          <option ng-repeat="doctor in vm.doctores" value="{{ doctor.especialidad }}">
+            {{ doctor.especialidad }}
+          </option>
+        </select>
+      </div>
+      
+      <!-- Filtro por orden de fecha -->
+      <div class="filtro-group">
+        <label for="ordenFecha">Ordenar por fecha</label>
+        <select id="ordenFecha" ng-model="vm.filtros.ordenFecha" ng-change="vm.aplicarFiltros()">
+          <option value="">Sin orden</option>
+          <option value="asc">Más antiguos primero</option>
+          <option value="desc">Más recientes primero</option>
+        </select>
+      </div>
+      
+      <!-- Filtro por sexo -->
+      <div class="filtro-group">
+        <label for="sexo">Sexo del paciente</label>
+        <select id="sexo" ng-model="vm.filtros.sexo" ng-change="vm.aplicarFiltros()">
+          <option value="">Todos</option>
+          <option value="M">Mujer</option>
+          <option value="H">Hombre</option>
+        </select>
+      </div>
+      
+      <!-- Filtro por estado -->
+      <div class="filtro-group">
+        <label for="estado">Estado de atención</label>
+        <select id="estado" ng-model="vm.filtros.estado" ng-change="vm.aplicarFiltros()">
+          <option value="">Todos</option>
+          <option value="Atendido">Atendido</option>
+          <option value="Pendiente">Pendiente</option>
+        </select>
+      </div>
+    </div>
+  
+    <div class="search-bar">
+      <input type="text" placeholder="Buscar paciente por nombre..." ng-model="vm.filtros.busqueda" ng-change="vm.aplicarFiltros()">
+    </div>
+  
+    <div class="listado">
+      <div class="paciente-card" ng-repeat="paciente in vm.pacientesFiltrados = (vm.pacientes | filter:vm.filtrarPacientes | orderBy:vm.ordenarPorFecha)">
+        <div class="info-principal">
+          <div class="nombre">
+            <span ng-class="{'sexo-icon hombre': paciente.sexo === 'H', 'sexo-icon mujer': paciente.sexo === 'M'}">
+              {{ paciente.sexo === 'H' ? '♂' : '♀' }}
+            </span>
+            {{ paciente.nombre }}
+          </div>
+          <div class="estado" ng-class="{'estado-atendido': paciente.estado === 'Atendido', 'estado-pendiente': paciente.estado === 'Pendiente'}">
+            {{ paciente.estado }}
+          </div>
+        </div>
+        <div class="info-detalles">
+          <div>
+            <strong>Fecha:</strong> {{ paciente.fecha }}
+          </div>
+          <div>
+            <strong>Diagnóstico:</strong> {{ paciente.diagnostico }}
+          </div>
+          <div>
+            <strong>Doctor:</strong> 
+            <span class="doctor-tag doctor-{{paciente.doctorId}}">
+              {{ vm.getDoctorName(paciente.doctorId) }} ({{ vm.getDoctorSpecialty(paciente.doctorId) }})
+            </span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    angular.module('pacienteApp', [])
+      .controller('VisualizarController', function() {
+        const vm = this;
+        
+        // Definición de los 5 doctores con sus especialidades
+        vm.doctores = [
+          { id: 1, nombre: 'Dr. Carlos Mendoza', especialidad: 'Cardiología' },
+          { id: 2, nombre: 'Dra. Ana López', especialidad: 'Pediatría' },
+          { id: 3, nombre: 'Dr. Javier Ríos', especialidad: 'Traumatología' },
+          { id: 4, nombre: 'Dra. Sofía Vargas', especialidad: 'Neurología' },
+          { id: 5, nombre: 'Dr. Roberto Soto', especialidad: 'Medicina General' }
+        ];
+        
+        // Inicializar filtros
+        vm.filtros = {
+          especialidad: '',
+          ordenFecha: '',
+          sexo: '',
+          estado: '',
+          busqueda: ''
+        };
+        
+        // Función para obtener nombre del doctor
+        vm.getDoctorName = function(doctorId) {
+          const doctor = vm.doctores.find(d => d.id === doctorId);
+          return doctor ? doctor.nombre : 'Desconocido';
+        };
+        
+        // Función para obtener especialidad del doctor
+        vm.getDoctorSpecialty = function(doctorId) {
+          const doctor = vm.doctores.find(d => d.id === doctorId);
+          return doctor ? doctor.especialidad : 'Sin especialidad';
+        };
+        
+        // Datos de pacientes con sexo y estado añadidos
+        vm.pacientes = [
+          // Cardiología (Dr. Carlos Mendoza)
+          {
+            nombre: 'Juan Pérez',
+            fecha: '2025-05-03 14:20',
+            diagnostico: 'Hipertensión arterial',
+            doctorId: 1,
+            estado: 'Atendido',
+            sexo: 'H'
+          },
+          {
+            nombre: 'María González',
+            fecha: '2025-05-04 09:15',
+            diagnostico: 'Arritmia cardíaca',
+            doctorId: 1,
+            estado: 'Atendido',
+            sexo: 'M'
+          },
+          
+          // Pediatría (Dra. Ana López)
+          {
+            nombre: 'Pedro Sánchez',
+            fecha: '2025-05-04 10:30',
+            diagnostico: 'Fiebre infantil',
+            doctorId: 2,
+            estado: 'Pendiente',
+            sexo: 'H'
+          },
+          {
+            nombre: 'Lucía Fernández',
+            fecha: '2025-05-05 11:30',
+            diagnostico: 'Control de niño sano',
+            doctorId: 2,
+            estado: 'Atendido',
+            sexo: 'M'
+          },
+          
+          // Traumatología (Dr. Javier Ríos)
+          {
+            nombre: 'Carlos Ruiz',
+            fecha: '2025-05-02 17:45',
+            diagnostico: 'Fractura de brazo',
+            doctorId: 3,
+            estado: 'Atendido',
+            sexo: 'H'
+          },
+          {
+            nombre: 'Elena Castro',
+            fecha: '2025-05-05 08:45',
+            diagnostico: 'Esguince de tobillo',
+            doctorId: 3,
+            estado: 'Pendiente',
+            sexo: 'M'
+          },
+          
+          // Neurología (Dra. Sofía Vargas)
+          {
+            nombre: 'Ana Gómez',
+            fecha: '2025-05-03 13:00',
+            diagnostico: 'Migraña crónica',
+            doctorId: 4,
+            estado: 'Atendido',
+            sexo: 'M'
+          },
+          {
+            nombre: 'Ricardo Torres',
+            fecha: '2025-05-04 15:30',
+            diagnostico: 'Epilepsia control',
+            doctorId: 4,
+            estado: 'Atendido',
+            sexo: 'H'
+          },
+          
+          // Medicina General (Dr. Roberto Soto)
+          {
+            nombre: 'Laura Díaz',
+            fecha: '2025-05-04 11:45',
+            diagnostico: 'Infección respiratoria',
+            doctorId: 5,
+            estado: 'Atendido',
+            sexo: 'M'
+          },
+          {
+            nombre: 'Fernando Núñez',
+            fecha: '2025-05-05 10:15',
+            diagnostico: 'Control de diabetes',
+            doctorId: 5,
+            estado: 'Pendiente',
+            sexo: 'H'
+          },
+          
+          // Más pacientes para completar 20
+          {
+            nombre: 'Sofía Rojas',
+            fecha: '2025-05-04 14:00',
+            diagnostico: 'Taquicardia',
+            doctorId: 1,
+            estado: 'Atendido',
+            sexo: 'M'
+          },
+          {
+            nombre: 'Jorge Mendoza',
+            fecha: '2025-05-04 12:20',
+            diagnostico: 'Control de vacunas',
+            doctorId: 2,
+            estado: 'Atendido',
+            sexo: 'H'
+          },
+          {
+            nombre: 'Héctor Quiroga',
+            fecha: '2025-05-05 13:45',
+            diagnostico: 'Lesión deportiva',
+            doctorId: 3,
+            estado: 'Atendido',
+            sexo: 'H'
+          },
+          {
+            nombre: 'Isabel Salazar',
+            fecha: '2025-05-05 15:00',
+            diagnostico: 'Parkinson',
+            doctorId: 4,
+            estado: 'Pendiente',
+            sexo: 'M'
+          },
+          {
+            nombre: 'Manuel Ulloa',
+            fecha: '2025-05-06 09:30',
+            diagnostico: 'Resfriado común',
+            doctorId: 5,
+            estado: 'Atendido',
+            sexo: 'H'
+          },
+          {
+            nombre: 'Natalia Valdés',
+            fecha: '2025-05-06 10:45',
+            diagnostico: 'Soplo cardíaco',
+            doctorId: 1,
+            estado: 'Atendido',
+            sexo: 'M'
+          },
+          {
+            nombre: 'Oscar Wilson',
+            fecha: '2025-05-06 12:15',
+            diagnostico: 'Desarrollo psicomotor',
+            doctorId: 2,
+            estado: 'Pendiente',
+            sexo: 'H'
+          },
+          {
+            nombre: 'Patricia Ximénez',
+            fecha: '2025-05-06 14:30',
+            diagnostico: 'Luxación de hombro',
+            doctorId: 3,
+            estado: 'Atendido',
+            sexo: 'M'
+          },
+          {
+            nombre: 'Quillén Yáñez',
+            fecha: '2025-05-06 16:00',
+            diagnostico: 'Esclerosis múltiple',
+            doctorId: 4,
+            estado: 'Atendido',
+            sexo: 'M'
+          },
+          {
+            nombre: 'Roberto Zamora',
+            fecha: '2025-05-07 08:30',
+            diagnostico: 'Chequeo anual',
+            doctorId: 5,
+            estado: 'Pendiente',
+            sexo: 'H'
+          }
+        ];
+        
+        // Propiedades computadas
+        Object.defineProperty(vm, 'totalPacientes', {
+          get: function() {
+            return this.pacientes.length;
+          }
+        });
+        
+        // Función para filtrar pacientes
+        vm.filtrarPacientes = function(paciente) {
+          // Filtrar por especialidad si está seleccionada
+          if (vm.filtros.especialidad && 
+              vm.getDoctorSpecialty(paciente.doctorId) !== vm.filtros.especialidad) {
+            return false;
+          }
+          
+          // Filtrar por sexo si está seleccionado
+          if (vm.filtros.sexo && paciente.sexo !== vm.filtros.sexo) {
+            return false;
+          }
+          
+          // Filtrar por estado si está seleccionado
+          if (vm.filtros.estado && paciente.estado !== vm.filtros.estado) {
+            return false;
+          }
+          
+          // Filtrar por búsqueda de nombre
+          if (vm.filtros.busqueda && 
+              !paciente.nombre.toLowerCase().includes(vm.filtros.busqueda.toLowerCase())) {
+            return false;
+          }
+          
+          return true;
+        };
+        
+        // Función para ordenar por fecha
+        vm.ordenarPorFecha = function(paciente) {
+          return new Date(paciente.fecha);
+        };
+        
+        // Función para aplicar filtros
+        vm.aplicarFiltros = function() {
+          // La magia ocurre automáticamente gracias a los watchers de Angular
+        };
+        
+        // Inicializar pacientes filtrados
+        vm.pacientesFiltrados = vm.pacientes;
+      });
+  </script>
+</body>
+</html>

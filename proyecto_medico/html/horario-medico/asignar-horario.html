@@ -1,0 +1,649 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Gestión de Horarios Médicos</title>
+  <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.8.2/angular.min.js"></script>
+  <style>
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      margin: 0;
+      padding: 0;
+      background-color: #f4f5f8;
+    }
+    
+    .container {
+      padding: 1rem;
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+    
+    .header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1.5rem;
+    }
+    
+    .header h2 {
+      color: #2c3e50;
+      margin: 0;
+      font-size: 1.8rem;
+    }
+    
+    .btn {
+      padding: 0.6rem 1.2rem;
+      border: none;
+      border-radius: 6px;
+      font-size: 0.9rem;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+    
+    .btn-primary {
+      background-color: #4caf50;
+      color: white;
+    }
+    
+    .btn-primary:hover {
+      background-color: #3d8b40;
+    }
+    
+    .btn-danger {
+      background-color: #f44336;
+      color: white;
+    }
+    
+    .btn-danger:hover {
+      background-color: #d32f2f;
+    }
+    
+    .filtros-container {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 1rem;
+      margin-bottom: 1.5rem;
+      background: white;
+      padding: 1rem;
+      border-radius: 8px;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+    }
+    
+    .filtro-group {
+      display: flex;
+      flex-direction: column;
+      min-width: 200px;
+    }
+    
+    .filtro-group label {
+      margin-bottom: 0.5rem;
+      font-weight: 500;
+      color: #555;
+      font-size: 0.9rem;
+    }
+    
+    .filtro-group select {
+      padding: 0.6rem;
+      border: 1px solid #ddd;
+      border-radius: 6px;
+      font-size: 0.9rem;
+    }
+    
+    .medicos-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+      gap: 1.5rem;
+      margin-bottom: 2rem;
+    }
+    
+    .medico-card {
+      background: white;
+      border-radius: 12px;
+      padding: 1.2rem;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+      transition: transform 0.2s ease;
+    }
+    
+    .medico-card:hover {
+      transform: translateY(-3px);
+    }
+    
+    .medico-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 0.8rem;
+    }
+    
+    .medico-nombre {
+      font-size: 1.2rem;
+      font-weight: bold;
+      color: #2c3e50;
+      margin: 0;
+    }
+    
+    .especialidad-tag {
+      padding: 0.3rem 0.6rem;
+      border-radius: 12px;
+      font-size: 0.8rem;
+      font-weight: bold;
+      color: white;
+    }
+    
+    /* Colores por especialidad */
+    .pediatria { background-color: #009688; }
+    .cardiologia { background-color: #3f51b5; }
+    .dermatologia { background-color: #ff5722; }
+    .neurologia { background-color: #9c27b0; }
+    .medicina-general { background-color: #607d8b; }
+    
+    .horario-info {
+      margin-top: 1rem;
+    }
+    
+    .horario-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0.6rem 0;
+      border-bottom: 1px solid #eee;
+    }
+    
+    .horario-item:last-child {
+      border-bottom: none;
+    }
+    
+    .horario-dias {
+      font-weight: 500;
+      color: #555;
+    }
+    
+    .horario-horas {
+      color: #2c3e50;
+    }
+    
+    .horario-actions {
+      display: flex;
+      gap: 0.5rem;
+    }
+    
+    .action-btn {
+      background: none;
+      border: none;
+      cursor: pointer;
+      color: #555;
+      font-size: 0.9rem;
+      transition: color 0.2s ease;
+    }
+    
+    .action-btn:hover {
+      color: #2196f3;
+    }
+    
+    .action-btn.delete:hover {
+      color: #f44336;
+    }
+    
+    /* Modal */
+    .modal {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0, 0, 0, 0.5);
+      z-index: 1000;
+      justify-content: center;
+      align-items: center;
+    }
+    
+    .modal.active {
+      display: flex;
+    }
+    
+    .modal-content {
+      background: white;
+      border-radius: 12px;
+      width: 90%;
+      max-width: 500px;
+      padding: 1.5rem;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    }
+    
+    .modal-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1.5rem;
+    }
+    
+    .modal-header h3 {
+      margin: 0;
+      color: #2c3e50;
+    }
+    
+    .close-btn {
+      background: none;
+      border: none;
+      font-size: 1.5rem;
+      cursor: pointer;
+      color: #555;
+    }
+    
+    .form-group {
+      margin-bottom: 1.2rem;
+    }
+    
+    .form-group label {
+      display: block;
+      margin-bottom: 0.5rem;
+      font-weight: 500;
+      color: #555;
+    }
+    
+    .form-group select,
+    .form-group input {
+      width: 100%;
+      padding: 0.7rem;
+      border: 1px solid #ddd;
+      border-radius: 6px;
+      font-size: 0.9rem;
+    }
+    
+    .dias-selector {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+      margin-bottom: 1rem;
+    }
+    
+    .dia-checkbox {
+      display: none;
+    }
+    
+    .dia-label {
+      padding: 0.5rem 0.8rem;
+      border: 1px solid #ddd;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+    
+    .dia-checkbox:checked + .dia-label {
+      background-color: #2196f3;
+      color: white;
+      border-color: #2196f3;
+    }
+    
+    .horario-inputs {
+      display: flex;
+      gap: 1rem;
+    }
+    
+    .modal-footer {
+      display: flex;
+      justify-content: flex-end;
+      gap: 1rem;
+      margin-top: 1.5rem;
+    }
+  </style>
+</head>
+<body ng-app="horarioApp" ng-controller="HorarioController as vm">
+  <div class="container">
+    <div class="header">
+      <h2>Gestión de Horarios Médicos</h2>
+      <button class="btn btn-primary" ng-click="vm.abrirModalNuevo()">Nuevo Horario</button>
+    </div>
+    
+    <div class="filtros-container">
+      <div class="filtro-group">
+        <label for="filtroEspecialidad">Especialidad</label>
+        <select id="filtroEspecialidad" ng-model="vm.filtroEspecialidad" ng-change="vm.aplicarFiltros()">
+          <option value="">Todas las especialidades</option>
+          <option value="Pediatría">Pediatría</option>
+          <option value="Cardiología">Cardiología</option>
+          <option value="Dermatología">Dermatología</option>
+          <option value="Neurología">Neurología</option>
+          <option value="Medicina General">Medicina General</option>
+        </select>
+      </div>
+      
+      <div class="filtro-group">
+        <label for="filtroDia">Día de la semana</label>
+        <select id="filtroDia" ng-model="vm.filtroDia" ng-change="vm.aplicarFiltros()">
+          <option value="">Todos los días</option>
+          <option value="Lun">Lunes</option>
+          <option value="Mar">Martes</option>
+          <option value="Mié">Miércoles</option>
+          <option value="Jue">Jueves</option>
+          <option value="Vie">Viernes</option>
+          <option value="Sáb">Sábado</option>
+          <option value="Dom">Domingo</option>
+        </select>
+      </div>
+    </div>
+    
+    <div class="medicos-grid">
+      <div class="medico-card" ng-repeat="medico in vm.medicosFiltrados">
+        <div class="medico-header">
+          <h3 class="medico-nombre">{{ medico.nombre }}</h3>
+          <span class="especialidad-tag {{ medico.especialidad | lowercase | removeAccents | replace:' ':'-' }}">
+            {{ medico.especialidad }}
+          </span>
+        </div>
+        
+        <div class="horario-info">
+          <div class="horario-item" ng-repeat="horario in medico.horarios">
+            <div>
+              <div class="horario-dias">{{ horario.dias }}</div>
+              <div class="horario-horas">{{ horario.horaInicio }} - {{ horario.horaFin }}</div>
+            </div>
+            <div class="horario-actions">
+              <button class="action-btn" ng-click="vm.abrirModalEditar(medico, horario)">Editar</button>
+              <button class="action-btn delete" ng-click="vm.eliminarHorario(medico, horario)">Eliminar</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Modal para nuevo/editar horario -->
+  <div class="modal" ng-class="{active: vm.modalAbierto}">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3>{{ vm.modalTitulo }}</h3>
+        <button class="close-btn" ng-click="vm.cerrarModal()">&times;</button>
+      </div>
+      
+      <div class="form-group">
+        <label for="medicoSelect">Médico</label>
+        <select id="medicoSelect" ng-model="vm.horarioEdit.medicoId" ng-disabled="vm.editando">
+          <option ng-repeat="medico in vm.medicos" value="{{ medico.id }}">
+            {{ medico.nombre }} ({{ medico.especialidad }})
+          </option>
+        </select>
+      </div>
+      
+      <div class="form-group">
+        <label>Días de atención</label>
+        <div class="dias-selector">
+          <input type="checkbox" id="diaLun" class="dia-checkbox" ng-model="vm.horarioEdit.diasSeleccionados.Lun">
+          <label for="diaLun" class="dia-label">Lun</label>
+          
+          <input type="checkbox" id="diaMar" class="dia-checkbox" ng-model="vm.horarioEdit.diasSeleccionados.Mar">
+          <label for="diaMar" class="dia-label">Mar</label>
+          
+          <input type="checkbox" id="diaMie" class="dia-checkbox" ng-model="vm.horarioEdit.diasSeleccionados.Mié">
+          <label for="diaMie" class="dia-label">Mié</label>
+          
+          <input type="checkbox" id="diaJue" class="dia-checkbox" ng-model="vm.horarioEdit.diasSeleccionados.Jue">
+          <label for="diaJue" class="dia-label">Jue</label>
+          
+          <input type="checkbox" id="diaVie" class="dia-checkbox" ng-model="vm.horarioEdit.diasSeleccionados.Vie">
+          <label for="diaVie" class="dia-label">Vie</label>
+          
+          <input type="checkbox" id="diaSab" class="dia-checkbox" ng-model="vm.horarioEdit.diasSeleccionados.Sáb">
+          <label for="diaSab" class="dia-label">Sáb</label>
+          
+          <input type="checkbox" id="diaDom" class="dia-checkbox" ng-model="vm.horarioEdit.diasSeleccionados.Dom">
+          <label for="diaDom" class="dia-label">Dom</label>
+        </div>
+      </div>
+      
+      <div class="form-group">
+        <label>Horario</label>
+        <div class="horario-inputs">
+          <input type="time" ng-model="vm.horarioEdit.horaInicio">
+          <span style="align-self: center;">a</span>
+          <input type="time" ng-model="vm.horarioEdit.horaFin">
+        </div>
+      </div>
+      
+      <div class="modal-footer">
+        <button class="btn btn-secondary" ng-click="vm.cerrarModal()">Cancelar</button>
+        <button class="btn btn-primary" ng-click="vm.guardarHorario()">Guardar</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    angular.module('horarioApp', [])
+      .filter('removeAccents', function() {
+        return function(input) {
+          if (!input) return input;
+          return input.normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+        };
+      })
+      .filter('replace', function() {
+        return function(input, search, replacement) {
+          if (!input) return input;
+          return input.replace(new RegExp(search, 'g'), replacement);
+        };
+      })
+      .controller('HorarioController', function() {
+        const vm = this;
+        
+        // Datos iniciales de médicos
+        vm.medicos = [
+          { 
+            id: 1, 
+            nombre: 'Dr. Juan Rivera', 
+            especialidad: 'Pediatría', 
+            horarios: [
+              { dias: 'Lun-Vie', horaInicio: '09:00', horaFin: '13:00' }
+            ]
+          },
+          { 
+            id: 2, 
+            nombre: 'Dra. Paula Fernández', 
+            especialidad: 'Cardiología', 
+            horarios: [
+              { dias: 'Lun-Mié', horaInicio: '14:00', horaFin: '18:00' }
+            ]
+          },
+          { 
+            id: 3, 
+            nombre: 'Dr. Luis Ramírez', 
+            especialidad: 'Dermatología', 
+            horarios: [
+              { dias: 'Mar-Jue', horaInicio: '10:00', horaFin: '16:00' }
+            ]
+          },
+          { 
+            id: 4, 
+            nombre: 'Dra. Sofía Vargas', 
+            especialidad: 'Neurología', 
+            horarios: [
+              { dias: 'Lun-Jue', horaInicio: '08:00', horaFin: '12:00' },
+              { dias: 'Vie', horaInicio: '08:00', horaFin: '11:00' }
+            ]
+          },
+          { 
+            id: 5, 
+            nombre: 'Dr. Roberto Soto', 
+            especialidad: 'Medicina General', 
+            horarios: [
+              { dias: 'Lun-Vie', horaInicio: '08:00', horaFin: '20:00' },
+              { dias: 'Sáb', horaInicio: '09:00', horaFin: '14:00' }
+            ]
+          }
+        ];
+        
+        // Filtros
+        vm.filtroEspecialidad = '';
+        vm.filtroDia = '';
+        vm.medicosFiltrados = vm.medicos;
+        
+        // Estado del modal
+        vm.modalAbierto = false;
+        vm.modalTitulo = 'Nuevo Horario';
+        vm.editando = false;
+        
+        // Datos para edición
+        vm.horarioEdit = {
+          medicoId: null,
+          diasSeleccionados: {
+            Lun: false,
+            Mar: false,
+            Mié: false,
+            Jue: false,
+            Vie: false,
+            Sáb: false,
+            Dom: false
+          },
+          horaInicio: '08:00',
+          horaFin: '16:00',
+          horarioOriginal: null,
+          medicoOriginal: null
+        };
+        
+        // Funciones de filtrado
+        vm.aplicarFiltros = function() {
+          vm.medicosFiltrados = vm.medicos.filter(medico => {
+            // Filtrar por especialidad
+            if (vm.filtroEspecialidad && medico.especialidad !== vm.filtroEspecialidad) {
+              return false;
+            }
+            
+            // Filtrar por día
+            if (vm.filtroDia) {
+              const tieneDia = medico.horarios.some(horario => {
+                return horario.dias.includes(vm.filtroDia);
+              });
+              
+              if (!tieneDia) return false;
+            }
+            
+            return true;
+          });
+        };
+        
+        // Funciones del modal
+        vm.abrirModalNuevo = function() {
+          vm.modalTitulo = 'Nuevo Horario';
+          vm.editando = false;
+          
+          // Reiniciar datos del formulario
+          vm.horarioEdit = {
+            medicoId: vm.medicos[0].id,
+            diasSeleccionados: {
+              Lun: false,
+              Mar: false,
+              Mié: false,
+              Jue: false,
+              Vie: false,
+              Sáb: false,
+              Dom: false
+            },
+            horaInicio: '08:00',
+            horaFin: '16:00',
+            horarioOriginal: null,
+            medicoOriginal: null
+          };
+          
+          vm.modalAbierto = true;
+        };
+        
+        vm.abrirModalEditar = function(medico, horario) {
+          vm.modalTitulo = 'Editar Horario';
+          vm.editando = true;
+          
+          // Convertir días del horario a formato de selección
+          const diasArray = horario.dias.split('-');
+          const diasSeleccionados = {
+            Lun: false,
+            Mar: false,
+            Mié: false,
+            Jue: false,
+            Vie: false,
+            Sáb: false,
+            Dom: false
+          };
+          
+          diasArray.forEach(dia => {
+            diasSeleccionados[dia] = true;
+          });
+          
+          vm.horarioEdit = {
+            medicoId: medico.id,
+            diasSeleccionados: diasSeleccionados,
+            horaInicio: horario.horaInicio,
+            horaFin: horario.horaFin,
+            horarioOriginal: horario,
+            medicoOriginal: medico
+          };
+          
+          vm.modalAbierto = true;
+        };
+        
+        vm.cerrarModal = function() {
+          vm.modalAbierto = false;
+        };
+        
+        // Funciones para guardar/eliminar horarios
+        vm.guardarHorario = function() {
+          // Validar que al menos un día esté seleccionado
+          const diasSeleccionados = Object.entries(vm.horarioEdit.diasSeleccionados)
+            .filter(([dia, seleccionado]) => seleccionado)
+            .map(([dia]) => dia);
+          
+          if (diasSeleccionados.length === 0) {
+            alert('Seleccione al menos un día');
+            return;
+          }
+          
+          // Formatear días (ej: Lun-Mar-Mié o Lun-Vie)
+          let diasFormateados = diasSeleccionados.join('-');
+          
+          // Crear objeto de horario
+          const nuevoHorario = {
+            dias: diasFormateados,
+            horaInicio: vm.horarioEdit.horaInicio,
+            horaFin: vm.horarioEdit.horaFin
+          };
+          
+          if (vm.editando) {
+            // Editar horario existente
+            const medico = vm.medicos.find(m => m.id === vm.horarioEdit.medicoOriginal.id);
+            const horarioIndex = medico.horarios.indexOf(vm.horarioEdit.horarioOriginal);
+            
+            if (vm.horarioEdit.medicoId === vm.horarioEdit.medicoOriginal.id) {
+              // Mismo médico, actualizar horario
+              medico.horarios[horarioIndex] = nuevoHorario;
+            } else {
+              // Cambió de médico, eliminar del original y agregar al nuevo
+              medico.horarios.splice(horarioIndex, 1);
+              
+              const nuevoMedico = vm.medicos.find(m => m.id === vm.horarioEdit.medicoId);
+              nuevoMedico.horarios.push(nuevoHorario);
+            }
+          } else {
+            // Nuevo horario
+            const medico = vm.medicos.find(m => m.id === vm.horarioEdit.medicoId);
+            medico.horarios.push(nuevoHorario);
+          }
+          
+          // Aplicar filtros por si cambió algo relevante
+          vm.aplicarFiltros();
+          vm.cerrarModal();
+        };
+        
+        vm.eliminarHorario = function(medico, horario) {
+          if (confirm('¿Está seguro que desea eliminar este horario?')) {
+            const horarioIndex = medico.horarios.indexOf(horario);
+            medico.horarios.splice(horarioIndex, 1);
+            
+            // Aplicar filtros por si el horario eliminado afecta los resultados
+            vm.aplicarFiltros();
+          }
+        };
+        
+        // Inicializar
+        vm.aplicarFiltros();
+      });
+  </script>
+</body>
+</html>
