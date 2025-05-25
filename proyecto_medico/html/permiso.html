@@ -2,7 +2,7 @@
 <html lang="es" class="layout-wide customizer-hide" data-assets-path="/static/" data-template="vertical-menu-template-free">
 <head>
   <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Solicitud de Permiso</title>
 
   <link rel="icon" type="image/x-icon" href="/static/img/logo/logo.jpg" />
@@ -110,7 +110,7 @@
                 <td>${p.tipo}</td>
                 <td>${p.fecha_inicio}</td>
                 <td>${p.fecha_fin}</td>
-                <td>${p.estado === 1 ? "Aprobado" : "Pendiente"}</td>
+                <td>${p.estado}</td>
               </tr>`;
             tbody.innerHTML += fila;
           });
@@ -127,7 +127,7 @@
           tipo: document.getElementById("tipo").value,
           fecha_inicio: document.getElementById("fecha_inicio").value,
           fecha_fin: document.getElementById("fecha_fin").value,
-          estado: 0,
+          estado: "Pendiente",  // ← Cambiado a texto
           medico: usuario.id
         };
 

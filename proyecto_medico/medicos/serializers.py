@@ -22,7 +22,7 @@ class MedicoSerializer(serializers.ModelSerializer):
 class PermisoSerializer(serializers.ModelSerializer):
     class Meta:
         model = Permiso
-        fields = '__all__'
+        fields = ['id_permiso', 'tipo', 'fecha_inicio', 'fecha_fin', 'estado', 'medico']
 
 class AdministradorSerializer(serializers.ModelSerializer):
     class Meta:

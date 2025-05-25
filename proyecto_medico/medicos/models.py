@@ -33,7 +33,7 @@ class Permiso(models.Model):
     tipo = models.CharField(max_length=100)
     fecha_inicio = models.DateField()
     fecha_fin = models.DateField()
-    estado = models.IntegerField()
+    estado = models.CharField(max_length=350)  # ← CAMBIO AQUÍ
     medico = models.ForeignKey(
         Medico,
         on_delete=models.CASCADE,
@@ -42,6 +42,8 @@ class Permiso(models.Model):
 
     class Meta:
         db_table = 'PERMISOS'
+
+
 
 # Tabla ADMINISTRADOR
 class Administrador(models.Model):
