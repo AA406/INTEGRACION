@@ -16,7 +16,7 @@ class Medico(models.Model):
     nombre = models.CharField(max_length=100)
     apellido = models.CharField(max_length=100)
     email = models.EmailField()
-    est_med = models.IntegerField()
+    est_med = models.CharField(max_length=350)
     especialidad = models.ForeignKey(
         Especialidad,
         on_delete=models.SET_NULL,
