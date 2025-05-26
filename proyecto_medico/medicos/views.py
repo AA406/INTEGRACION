@@ -2,6 +2,7 @@ from rest_framework import viewsets
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework import status
+from django_filters.rest_framework import DjangoFilterBackend
 
 from .models import Medico, Especialidad, Permiso, Administrador, ObservacionesMedico
 from .serializers import (
@@ -15,22 +16,32 @@ from .serializers import (
 class MedicoViewSet(viewsets.ModelViewSet):
     queryset = Medico.objects.all()
     serializer_class = MedicoSerializer
+    filter_backends = [DjangoFilterBackend]
+    filterset_fields = ['nombre', 'apellido', 'rut', 'email', 'est_med', 'especialidad__nombre']
 
 class EspecialidadViewSet(viewsets.ModelViewSet):
     queryset = Especialidad.objects.all()
     serializer_class = EspecialidadSerializer
+    filter_backends = [DjangoFilterBackend]
+    filterset_fields = ['nombre', 'descripcion']
 
 class PermisoViewSet(viewsets.ModelViewSet):
     queryset = Permiso.objects.all()
     serializer_class = PermisoSerializer
+    filter_backends = [DjangoFilterBackend]
+    filterset_fields = ['tipo', 'estado', 'medico__id_med', 'fecha_inicio', 'fecha_fin']
 
 class AdministradorViewSet(viewsets.ModelViewSet):
     queryset = Administrador.objects.all()
     serializer_class = AdministradorSerializer
+    filter_backends = [DjangoFilterBackend]
+    filterset_fields = ['nombre', 'rut', 'email']
 
 class ObservacionesMedicoViewSet(viewsets.ModelViewSet):
     queryset = ObservacionesMedico.objects.all()
     serializer_class = ObservacionesMedicoSerializer
+    filter_backends = [DjangoFilterBackend]
+    filterset_fields = ['medico', 'medico_fk__id_med']
 
     def get_queryset(self):
         id_medico = self.request.query_params.get('id_med')
