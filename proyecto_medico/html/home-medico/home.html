@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="es" class="layout-menu-fixed layout-compact" data-assets-path="/static/">
+
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Salud Total</title>
+  <link rel="icon" type="image/x-icon" href="/static/img/favicon/favicon.ico" />
+  <link href="https://fonts.googleapis.com/css2?family=Public+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="/static/vendor/fonts/iconify-icons.css" />
+  <link rel="stylesheet" href="/static/vendor/css/core.css" />
+  <link rel="stylesheet" href="/static/css/demo.css" />
+  <link rel="stylesheet" href="/static/vendor/libs/perfect-scrollbar/perfect-scrollbar.css" />
+  <script src="/static/vendor/js/helpers.js"></script>
+  <script src="/static/js/config.js"></script>
+</head>
+
+<body>
+  <div class="layout-wrapper layout-content-navbar">
+    <div class="layout-container">
+      <aside id="layout-menu" class="layout-menu menu-vertical menu bg-menu-theme">
+        <div class="app-brand demo">
+          <a href="#" class="app-brand-link">
+            <span class="app-brand-logo demo">
+              <svg width="25" viewBox="0 0 25 42" xmlns="http://www.w3.org/2000/svg">
+                <path d="M13.79,0.36 L3.4,7.44 C0.57,9.69 -0.38,12.48 0.56,15.8 C1.1,17.78 3.12,19.23 7.65,21.22 L2.63,24.55 C0.45,26.3 0.09,28.51 1.56,31.17 C2.84,32.82 5.21,33.26 7.09,32.54 C8.35,32.06 11.46,30 16.42,26.37 C18.03,24.5 18.7,22.45 18.41,20.24 C17.96,17.53 16.18,15.58 13.05,14.37 L10.92,13.47 L18.62,7.98 L13.79,0.36 Z" fill="currentColor" />
+              </svg>
+            </span>
+            <span class="app-brand-text demo menu-text fw-bold ms-2">Salud Total</span>
+          </a>
+        </div>
+        <div class="menu-inner-shadow"></div>
+        <ul class="menu-inner py-1">
+          <li class="menu-item">
+            <a href="/perfil_medico.html" class="menu-link">
+              <i class="menu-icon tf-icons bx bx-user"></i>
+              <div class="text-truncate">Perfil</div>
+            </a>
+          </li>
+          <li class="menu-item">
+            <a href="/comentarios.html" class="menu-link">
+              <i class="menu-icon tf-icons bx bx-message"></i>
+              <div class="text-truncate">Agenda Medica</div>
+            </a>
+          </li>
+          <li class="menu-item">
+            <a href="../permiso.html" class="menu-link">
+              <i class="menu-icon tf-icons bx bx-calendar-event"></i>
+              <div class="text-truncate">Permisos</div>
+            </a>
+          </li>
+        </ul>
+      </aside>
+
+      <div class="layout-page">
+        <nav class="layout-navbar container-xxl navbar navbar-expand-xl align-items-center bg-navbar-theme">
+          <div class="layout-menu-toggle navbar-nav align-items-xl-center me-4 me-xl-0 d-xl-none">
+            <a class="nav-item nav-link px-0 me-xl-4" href="javascript:void(0)"><i class="bx bx-menu"></i></a>
+          </div>
+          <div class="navbar-nav-right d-flex align-items-center" id="navbar-collapse">
+            <ul class="navbar-nav flex-row align-items-center ms-auto">
+              <li class="nav-item dropdown-user dropdown">
+                <a class="nav-link dropdown-toggle hide-arrow" href="#" data-bs-toggle="dropdown">
+                  <div class="avatar avatar-online">
+                    <img src="/static/img/avatars/1.png" alt class="w-px-40 h-auto rounded-circle" />
+                  </div>
+                </a>
+                <ul class="dropdown-menu dropdown-menu-end">
+                  <li><a class="dropdown-item" href="#"><i class="bx bx-power-off me-2"></i><span>Salir</span></a></li>
+                </ul>
+              </li>
+            </ul>
+          </div>
+        </nav>
+
+        <div class="content-wrapper">
+          <div class="container-xxl flex-grow-1 container-p-y">
+            <div class="row">
+              <div class="col-12">
+                <div class="card">
+                  <div class="card-body text-center">
+                    <h4 class="card-title">Bienvenido al portal del Médico</h4>
+                    <p>Seleccione una de las opciones del menú para continuar.</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <footer class="content-footer footer bg-footer-theme">
+            <div class="container-xxl">
+              <div class="footer-container d-flex justify-content-between py-2 flex-md-row flex-column">
+                <div>
+                  &#169; <script>document.write(new Date().getFullYear());</script>, Salud Total
+                </div>
+              </div>
+            </div>
+          </footer>
+          <div class="content-backdrop fade"></div>
+        </div>
+      </div>
+    </div>
+    <div class="layout-overlay layout-menu-toggle"></div>
+  </div>
+
+  <!-- JS -->
+  <script src="/static/vendor/libs/jquery/jquery.js"></script>
+  <script src="/static/vendor/libs/popper/popper.js"></script>
+  <script src="/static/vendor/js/bootstrap.js"></script>
+  <script src="/static/vendor/libs/perfect-scrollbar/perfect-scrollbar.js"></script>
+  <script src="/static/vendor/js/menu.js"></script>
+  <script src="/static/js/main.js"></script>
+</body>
+
+</html>

@@ -1,0 +1,111 @@
+<!doctype html>
+<html lang="es" class="layout-wide customizer-hide" data-assets-path="/static/" data-template="vertical-menu-template-free">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0" />
+  <title>Salud Total - Iniciar sesión</title>
+
+  <link rel="icon" type="image/x-icon" href="/static/img/logo/logo.jpg" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Public+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="/static/vendor/fonts/iconify-icons.css" />
+  <link rel="stylesheet" href="/static/vendor/css/core.css" />
+  <link rel="stylesheet" href="/static/css/demo.css" />
+  <link rel="stylesheet" href="/static/vendor/libs/perfect-scrollbar/perfect-scrollbar.css" />
+  <link rel="stylesheet" href="/static/vendor/css/pages/page-auth.css" />
+
+  <script src="/static/vendor/js/helpers.js"></script>
+  <script src="/static/js/config.js"></script>
+</head>
+
+<body>
+  <div class="container-xxl">
+    <div class="authentication-wrapper authentication-basic container-p-y">
+      <div class="authentication-inner">
+        <div class="card px-sm-6 px-0">
+          <div class="card-body">
+            <div class="app-brand justify-content-center">
+              <a href="index.html" class="app-brand-link gap-2">
+                <span class="app-brand-logo demo"><span class="text-primary">🔷</span></span>
+                <span class="app-brand-text demo text-heading fw-bold">Salud Total</span>
+              </a>
+            </div>
+            <h4 class="mb-1">Bienvenido 👋</h4>
+            <p class="mb-6">Por favor inicia sesión con tus credenciales</p>
+
+            <form id="formAuthentication" class="mb-6">
+              <div class="mb-3">
+                <label for="email" class="form-label">Correo</label>
+                <input type="text" class="form-control" id="email" placeholder="correo@ejemplo.com" required />
+              </div>
+
+              <div class="mb-4 form-password-toggle">
+                <label class="form-label" for="password">Contraseña</label>
+                <div class="input-group input-group-merge">
+                  <input type="password" id="password" class="form-control" placeholder="••••••••" required />
+                  <span class="input-group-text cursor-pointer"><i class="icon-base bx bx-hide"></i></span>
+                </div>
+              </div>
+
+              <button type="submit" class="btn btn-primary w-100">Iniciar sesión</button>
+            </form>
+
+            <p class="text-center">
+              <span>¿Nuevo en la plataforma?</span>
+              <a href="auth-register-basic.html">Crea una cuenta</a>
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- JS -->
+  <script src="/static/vendor/libs/jquery/jquery.js"></script>
+  <script src="/static/vendor/libs/popper/popper.js"></script>
+  <script src="/static/vendor/js/bootstrap.js"></script>
+  <script src="/static/vendor/libs/perfect-scrollbar/perfect-scrollbar.js"></script>
+  <script src="/static/vendor/js/menu.js"></script>
+  <script src="/static/js/main.js"></script>
+
+  <!-- Script login corregido con DOMContentLoaded -->
+  <script>
+    document.addEventListener('DOMContentLoaded', function () {
+      const form = document.getElementById('formAuthentication');
+
+      form.addEventListener('submit', async function (e) {
+        e.preventDefault();
+
+        const email = document.getElementById('email').value.trim();
+        const password = document.getElementById('password').value.trim();
+
+        try {
+          const response = await fetch('http://127.0.0.1:8000/api/login/', {
+
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ email, password })
+          });
+
+          if (!response.ok) throw new Error('Credenciales inválidas');
+
+          const data = await response.json();
+          localStorage.setItem('usuario', JSON.stringify(data));
+
+          if (data.tipo === 'admin') {
+            window.location.href = '/admin/dashboard.html';
+          } else if (data.tipo === 'medico') {
+            window.location.href = '/home-medico/home.html?id=' + data.id;
+          } else {
+            alert('Tipo de usuario no reconocido');
+          }
+
+        } catch (error) {
+          alert('❌ Error al iniciar sesión: ' + error.message);
+        }
+      });
+    });
+  </script>
+</body>
+</html>

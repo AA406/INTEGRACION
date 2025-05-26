@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Agenda Médica</title>
+
+  <!-- Estilos de Sneat -->
+  <link rel="stylesheet" href="/static/vendor/css/core.css" />
+  <link rel="stylesheet" href="/static/vendor/libs/perfect-scrollbar/perfect-scrollbar.css" />
+  <link rel="stylesheet" href="/static/vendor/css/pages/page-auth.css" />
+  <link rel="stylesheet" href="/static/vendor/fonts/boxicons.css" />
+
+  <style>
+    body {
+      background-color: #f8f9fa;
+    }
+
+    .navbar {
+      box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+    }
+
+    .navbar .navbar-brand {
+      font-weight: bold;
+      color: #0d6efd !important;
+    }
+
+    .card {
+      border-radius: 0.75rem;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    }
+
+    .card-title {
+      margin: 0;
+      color: #0d6efd;
+    }
+
+    h1 {
+      color: #0d6efd;
+    }
+
+    .table thead {
+      background-color: #f1f3f4;
+    }
+
+    .fecha-actual {
+      text-align: right;
+      font-weight: 500;
+      color: #6c757d;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Navbar -->
+  <nav class="navbar navbar-expand-lg bg-white mb-4">
+    <div class="container">
+      <span class="navbar-brand">Agenda del Médico</span>
+    </div>
+  </nav>
+
+  <!-- Contenido principal -->
+  <div class="container-xxl">
+    <div class="fecha-actual mb-3" id="fechaActual"></div>
+
+    <h1 class="mb-3">Citas Médicas del Día</h1>
+    <p class="text-muted mb-4">Estas son las citas agendadas para el día actual con los pacientes asignados.</p>
+
+    <div class="card">
+      <div class="card-header bg-white">
+        <h5 class="card-title">Agenda Diaria</h5>
+      </div>
+      <div class="card-body">
+        <div class="table-responsive">
+          <table class="table align-middle">
+            <thead>
+              <tr>
+                <th>Hora</th>
+                <th>Paciente</th>
+                <th>Motivo</th>
+                <th>Observaciones</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>08:00</td>
+                <td>Juan Pérez</td>
+                <td>Consulta general</td>
+                <td>Control anual</td>
+              </tr>
+              <tr>
+                <td>09:00</td>
+                <td>María González</td>
+                <td>Revisión</td>
+                <td>Post operatorio</td>
+              </tr>
+              <tr>
+                <td>10:00</td>
+                <td>Carlos Ruiz</td>
+                <td>Chequeo</td>
+                <td>Presión alta</td>
+              </tr>
+              <tr>
+                <td>11:30</td>
+                <td>Lucía Fernández</td>
+                <td>Consulta</td>
+                <td>Resultados de exámenes</td>
+              </tr>
+              <tr>
+                <td>13:00</td>
+                <td>Diego Soto</td>
+                <td>Evaluación médica</td>
+                <td>Dolor abdominal</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Scripts base -->
+  <script src="/static/vendor/libs/jquery/jquery.js"></script>
+  <script src="/static/vendor/libs/popper/popper.js"></script>
+  <script src="/static/vendor/js/bootstrap.js"></script>
+  <script src="/static/vendor/js/menu.js"></script>
+  <script src="/static/vendor/js/helpers.js"></script>
+  <script src="/static/vendor/libs/perfect-scrollbar/perfect-scrollbar.js"></script>
+
+  <script>
+    // Mostrar fecha actual en la parte superior derecha
+    const fecha = new Date();
+    const opciones = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+    document.getElementById('fechaActual').textContent = fecha.toLocaleDateString('es-ES', opciones);
+  </script>
+</body>
+</html>
