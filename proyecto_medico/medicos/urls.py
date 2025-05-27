@@ -3,7 +3,8 @@ from rest_framework.routers import DefaultRouter
 from .views import (
     MedicoViewSet, EspecialidadViewSet, PermisoViewSet,
     AdministradorViewSet, ObservacionesMedicoViewSet,
-    login_view, perfil_medico
+    login_view, perfil_medico,
+    historial_medico_view  # ⬅️ añade esta línea
 )
 
 # Router para CRUDs
@@ -16,7 +17,9 @@ router.register(r'observaciones', ObservacionesMedicoViewSet)
 
 # URL patterns
 urlpatterns = [
-    path('', include(router.urls)),              # Endpoints REST automáticos
-    path('login/', login_view),                  # POST /api/login/
-    path('perfil/', perfil_medico),              # GET /api/perfil/?id=...
+    path('', include(router.urls)),                   # Endpoints REST automáticos
+    path('login/', login_view),                       # POST /api/login/
+    path('perfil/', perfil_medico),                   # GET /api/perfil/?id=...
+    path('historial-medico/', historial_medico_view)
+
 ]

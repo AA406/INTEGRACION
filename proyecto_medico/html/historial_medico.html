@@ -1,0 +1,590 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistema de Historial Médico - Bootstrap</title>
+    
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Bootstrap Icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+    
+    <style>
+        :root {
+            --medical-primary: #1e40af;
+            --medical-secondary: #3b82f6;
+            --medical-light: #eff6ff;
+            --medical-border: #bfdbfe;
+        }
+
+        body {
+            background-color: #f8fafc;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        .medical-header {
+            background: linear-gradient(135deg, var(--medical-primary) 0%, var(--medical-secondary) 100%);
+            color: white;
+            padding: 2rem 0;
+            margin-bottom: 2rem;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        }
+
+        .medical-card {
+            border: none;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+            height: 100%;
+        }
+
+        .patient-card {
+            border: 2px solid #e2e8f0;
+            border-radius: 8px;
+            padding: 1rem;
+            margin-bottom: 1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            background: white;
+        }
+
+        .patient-card:hover {
+            border-color: var(--medical-secondary);
+            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.15);
+            transform: translateY(-2px);
+        }
+
+        .patient-card.active {
+            border-color: var(--medical-primary);
+            background: var(--medical-light);
+            box-shadow: 0 4px 12px rgba(30, 64, 175, 0.2);
+        }
+
+        .patient-name {
+            font-weight: 600;
+            font-size: 1.1rem;
+            color: var(--medical-primary);
+            margin-bottom: 0.5rem;
+        }
+
+        .patient-info {
+            font-size: 0.9rem;
+            color: #64748b;
+            margin-bottom: 0.25rem;
+        }
+
+        .patient-id {
+            background: var(--medical-secondary);
+            color: white;
+            padding: 0.25rem 0.5rem;
+            border-radius: 4px;
+            font-size: 0.8rem;
+            font-weight: 500;
+            display: inline-block;
+        }
+
+        .section-title {
+            color: var(--medical-primary);
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin-bottom: 1.5rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 2px solid var(--medical-secondary);
+        }
+
+        .detail-header {
+            background: linear-gradient(135deg, var(--medical-light) 0%, #dbeafe 100%);
+            border: 1px solid var(--medical-border);
+            border-radius: 8px;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            text-align: center;
+        }
+
+        .detail-patient-name {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: var(--medical-primary);
+            margin-bottom: 0.5rem;
+        }
+
+        .detail-subtitle {
+            color: #64748b;
+            font-size: 1rem;
+        }
+
+        .detail-item {
+            margin-bottom: 1.5rem;
+            padding: 1rem;
+            background: #f8fafc;
+            border-radius: 8px;
+            border-left: 4px solid var(--medical-secondary);
+        }
+
+        .detail-label {
+            font-weight: 600;
+            color: var(--medical-primary);
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 0.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .detail-value {
+            color: #334155;
+            font-size: 1rem;
+            line-height: 1.6;
+        }
+
+        .observations {
+            background: white;
+            border: 1px solid #e2e8f0;
+            border-radius: 6px;
+            padding: 1rem;
+            min-height: 120px;
+        }
+
+        .empty-state {
+            text-align: center;
+            color: #64748b;
+            padding: 3rem 1rem;
+        }
+
+        .empty-state .icon {
+            font-size: 4rem;
+            margin-bottom: 1rem;
+            color: #cbd5e1;
+        }
+
+        .medical-icon {
+            color: var(--medical-secondary);
+        }
+
+        .btn-medical {
+            background-color: var(--medical-primary);
+            border-color: var(--medical-primary);
+            color: white;
+        }
+
+        .btn-medical:hover {
+            background-color: #1a389b;
+            border-color: #1a389b;
+            color: white;
+        }
+
+        .card-header-medical {
+            background: linear-gradient(135deg, var(--medical-light) 0%, #dbeafe 100%);
+            border-bottom: 1px solid var(--medical-border);
+        }
+
+        .patients-container {
+            max-height: 600px;
+            overflow-y: auto;
+        }
+
+        .patients-container::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .patients-container::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 3px;
+        }
+
+        .patients-container::-webkit-scrollbar-thumb {
+            background: var(--medical-secondary);
+            border-radius: 3px;
+        }
+
+        .fade-in {
+            animation: fadeIn 0.3s ease-in;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @media (max-width: 768px) {
+            .medical-header h1 {
+                font-size: 2rem;
+            }
+            
+            .detail-patient-name {
+                font-size: 1.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container-fluid px-4">
+        <!-- Header -->
+        <header class="medical-header">
+            <div class="text-center">
+                <h1 class="display-4 fw-bold mb-2">
+                    <i class="bi bi-heart-pulse me-3"></i>
+                    Sistema de Historial Médico
+                </h1>
+                <p class="lead mb-0">Gestión profesional de registros clínicos</p>
+            </div>
+        </header>
+
+        <!-- Main Content -->
+        <div class="row g-4">
+            <!-- Lista de Pacientes -->
+            <div class="col-lg-6">
+                <div class="card medical-card">
+                    <div class="card-header card-header-medical">
+                        <h3 class="section-title mb-0">
+                            <i class="bi bi-people-fill me-2"></i>
+                            Pacientes Atendidos
+                        </h3>
+                        <small class="text-muted">Selecciona un paciente para ver su historial</small>
+                    </div>
+                    <div class="card-body">
+                        <div class="patients-container">
+                            <!-- Paciente 1 -->
+                            <div class="patient-card" onclick="selectPatient(1)" id="patient-1">
+                                <div class="patient-name">
+                                    <i class="bi bi-person-circle me-2"></i>
+                                    María Elena González
+                                </div>
+                                <div class="patient-info">
+                                    <i class="bi bi-clock me-1"></i>
+                                    Última consulta: 15 de Enero, 2024
+                                </div>
+                                <div class="patient-info">
+                                    <i class="bi bi-calendar-date me-1"></i>
+                                    Edad: 45 años
+                                </div>
+                                <div class="mt-2">
+                                    <span class="patient-id">ID: 001</span>
+                                </div>
+                            </div>
+
+                            <!-- Paciente 2 -->
+                            <div class="patient-card" onclick="selectPatient(2)" id="patient-2">
+                                <div class="patient-name">
+                                    <i class="bi bi-person-circle me-2"></i>
+                                    Carlos Roberto Mendoza
+                                </div>
+                                <div class="patient-info">
+                                    <i class="bi bi-clock me-1"></i>
+                                    Última consulta: 12 de Enero, 2024
+                                </div>
+                                <div class="patient-info">
+                                    <i class="bi bi-calendar-date me-1"></i>
+                                    Edad: 62 años
+                                </div>
+                                <div class="mt-2">
+                                    <span class="patient-id">ID: 002</span>
+                                </div>
+                            </div>
+
+                            <!-- Paciente 3 -->
+                            <div class="patient-card" onclick="selectPatient(3)" id="patient-3">
+                                <div class="patient-name">
+                                    <i class="bi bi-person-circle me-2"></i>
+                                    Ana Sofía Ramírez
+                                </div>
+                                <div class="patient-info">
+                                    <i class="bi bi-clock me-1"></i>
+                                    Última consulta: 10 de Enero, 2024
+                                </div>
+                                <div class="patient-info">
+                                    <i class="bi bi-calendar-date me-1"></i>
+                                    Edad: 28 años
+                                </div>
+                                <div class="mt-2">
+                                    <span class="patient-id">ID: 003</span>
+                                </div>
+                            </div>
+
+                            <!-- Paciente 4 -->
+                            <div class="patient-card" onclick="selectPatient(4)" id="patient-4">
+                                <div class="patient-name">
+                                    <i class="bi bi-person-circle me-2"></i>
+                                    José Miguel Torres
+                                </div>
+                                <div class="patient-info">
+                                    <i class="bi bi-clock me-1"></i>
+                                    Última consulta: 8 de Enero, 2024
+                                </div>
+                                <div class="patient-info">
+                                    <i class="bi bi-calendar-date me-1"></i>
+                                    Edad: 35 años
+                                </div>
+                                <div class="mt-2">
+                                    <span class="patient-id">ID: 004</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Detalle del Paciente -->
+            <div class="col-lg-6">
+                <div class="card medical-card">
+                    <div class="card-header card-header-medical">
+                        <h3 class="section-title mb-0">
+                            <i class="bi bi-file-medical me-2"></i>
+                            Detalle del Historial
+                        </h3>
+                        <small class="text-muted">Información médica completa</small>
+                    </div>
+                    <div class="card-body">
+                        <!-- Estado Vacío -->
+                        <div id="empty-state" class="empty-state">
+                            <div class="icon">
+                                <i class="bi bi-clipboard-data"></i>
+                            </div>
+                            <h4>Selecciona un paciente</h4>
+                            <p>Haz clic en cualquier paciente de la lista para ver su historial médico completo</p>
+                        </div>
+
+                        <!-- Detalle Paciente 1 -->
+                        <div id="detail-1" class="patient-detail d-none fade-in">
+                            <div class="detail-header">
+                                <div class="detail-patient-name">María Elena González</div>
+                                <div class="detail-subtitle">Historial Médico Completo</div>
+                            </div>
+
+                            <div class="detail-item">
+                                <div class="detail-label">
+                                    <i class="bi bi-person-badge"></i>
+                                    Nombre del Paciente
+                                </div>
+                                <div class="detail-value">María Elena González Pérez</div>
+                            </div>
+
+                            <div class="detail-item">
+                                <div class="detail-label">
+                                    <i class="bi bi-calendar-plus"></i>
+                                    Fecha de Creación del Historial
+                                </div>
+                                <div class="detail-value">15 de Marzo, 2023</div>
+                            </div>
+
+                            <div class="detail-item">
+                                <div class="detail-label">
+                                    <i class="bi bi-clipboard-pulse"></i>
+                                    Observaciones Médicas
+                                </div>
+                                <div class="detail-value">
+                                    <div class="observations">
+                                        Paciente con antecedentes de hipertensión arterial controlada con medicación. Presenta seguimiento regular cada 3 meses. En la última consulta se observó presión arterial estable (120/80 mmHg). Se recomienda continuar con el tratamiento actual y mantener dieta baja en sodio. Próxima cita programada para control rutinario en 3 meses.
+                                    </div>
+                                </div>
+                            </div>
+
+                            <button class="btn btn-outline-secondary w-100" onclick="clearSelection()">
+                                <i class="bi bi-arrow-left me-2"></i>
+                                Volver a la lista
+                            </button>
+                        </div>
+
+                        <!-- Detalle Paciente 2 -->
+                        <div id="detail-2" class="patient-detail d-none fade-in">
+                            <div class="detail-header">
+                                <div class="detail-patient-name">Carlos Roberto Mendoza</div>
+                                <div class="detail-subtitle">Historial Médico Completo</div>
+                            </div>
+
+                            <div class="detail-item">
+                                <div class="detail-label">
+                                    <i class="bi bi-person-badge"></i>
+                                    Nombre del Paciente
+                                </div>
+                                <div class="detail-value">Carlos Roberto Mendoza Silva</div>
+                            </div>
+
+                            <div class="detail-item">
+                                <div class="detail-label">
+                                    <i class="bi bi-calendar-plus"></i>
+                                    Fecha de Creación del Historial
+                                </div>
+                                <div class="detail-value">22 de Febrero, 2023</div>
+                            </div>
+
+                            <div class="detail-item">
+                                <div class="detail-label">
+                                    <i class="bi bi-clipboard-pulse"></i>
+                                    Observaciones Médicas
+                                </div>
+                                <div class="detail-value">
+                                    <div class="observations">
+                                        Paciente diabético tipo 2 en tratamiento con metformina. Hemoglobina glicosilada en rango objetivo (6.8%). Se observa buen control glucémico con la medicación actual. Recomendaciones: continuar con ejercicio regular, dieta controlada en carbohidratos y monitoreo glucémico diario. Control trimestral programado.
+                                    </div>
+                                </div>
+                            </div>
+
+                            <button class="btn btn-outline-secondary w-100" onclick="clearSelection()">
+                                <i class="bi bi-arrow-left me-2"></i>
+                                Volver a la lista
+                            </button>
+                        </div>
+
+                        <!-- Detalle Paciente 3 -->
+                        <div id="detail-3" class="patient-detail d-none fade-in">
+                            <div class="detail-header">
+                                <div class="detail-patient-name">Ana Sofía Ramírez</div>
+                                <div class="detail-subtitle">Historial Médico Completo</div>
+                            </div>
+
+                            <div class="detail-item">
+                                <div class="detail-label">
+                                    <i class="bi bi-person-badge"></i>
+                                    Nombre del Paciente
+                                </div>
+                                <div class="detail-value">Ana Sofía Ramírez López</div>
+                            </div>
+
+                            <div class="detail-item">
+                                <div class="detail-label">
+                                    <i class="bi bi-calendar-plus"></i>
+                                    Fecha de Creación del Historial
+                                </div>
+                                <div class="detail-value">5 de Abril, 2023</div>
+                            </div>
+
+                            <div class="detail-item">
+                                <div class="detail-label">
+                                    <i class="bi bi-clipboard-pulse"></i>
+                                    Observaciones Médicas
+                                </div>
+                                <div class="detail-value">
+                                    <div class="observations">
+                                        Paciente joven sin antecedentes médicos relevantes. Consulta por chequeo preventivo anual. Exámenes de laboratorio dentro de parámetros normales. Se recomienda mantener estilo de vida saludable, ejercicio regular y alimentación balanceada. Próximo control preventivo en 12 meses.
+                                    </div>
+                                </div>
+                            </div>
+
+                            <button class="btn btn-outline-secondary w-100" onclick="clearSelection()">
+                                <i class="bi bi-arrow-left me-2"></i>
+                                Volver a la lista
+                            </button>
+                        </div>
+
+                        <!-- Detalle Paciente 4 -->
+                        <div id="detail-4" class="patient-detail d-none fade-in">
+                            <div class="detail-header">
+                                <div class="detail-patient-name">José Miguel Torres</div>
+                                <div class="detail-subtitle">Historial Médico Completo</div>
+                            </div>
+
+                            <div class="detail-item">
+                                <div class="detail-label">
+                                    <i class="bi bi-person-badge"></i>
+                                    Nombre del Paciente
+                                </div>
+                                <div class="detail-value">José Miguel Torres Hernández</div>
+                            </div>
+
+                            <div class="detail-item">
+                                <div class="detail-label">
+                                    <i class="bi bi-calendar-plus"></i>
+                                    Fecha de Creación del Historial
+                                </div>
+                                <div class="detail-value">18 de Enero, 2023</div>
+                            </div>
+
+                            <div class="detail-item">
+                                <div class="detail-label">
+                                    <i class="bi bi-clipboard-pulse"></i>
+                                    Observaciones Médicas
+                                </div>
+                                <div class="detail-value">
+                                    <div class="observations">
+                                        Paciente con episodio de estrés laboral que generó síntomas de ansiedad. Tratamiento con técnicas de relajación y terapia cognitivo-conductual. Evolución favorable en las últimas semanas. Se recomienda continuar con manejo del estrés, ejercicio regular y técnicas de mindfulness. Seguimiento mensual.
+                                    </div>
+                                </div>
+                            </div>
+
+                            <button class="btn btn-outline-secondary w-100" onclick="clearSelection()">
+                                <i class="bi bi-arrow-left me-2"></i>
+                                Volver a la lista
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <script>
+        let selectedPatientId = null;
+
+        function selectPatient(patientId) {
+            // Limpiar selección anterior
+            clearSelection();
+            
+            // Marcar nuevo paciente como activo
+            selectedPatientId = patientId;
+            document.getElementById(`patient-${patientId}`).classList.add('active');
+            
+            // Ocultar estado vacío
+            document.getElementById('empty-state').classList.add('d-none');
+            
+            // Mostrar detalle del paciente seleccionado
+            document.getElementById(`detail-${patientId}`).classList.remove('d-none');
+            
+            // Scroll suave al detalle en móviles
+            if (window.innerWidth < 992) {
+                document.getElementById(`detail-${patientId}`).scrollIntoView({ 
+                    behavior: 'smooth', 
+                    block: 'start' 
+                });
+            }
+        }
+
+        function clearSelection() {
+            // Remover clase activa de todos los pacientes
+            document.querySelectorAll('.patient-card').forEach(card => {
+                card.classList.remove('active');
+            });
+            
+            // Ocultar todos los detalles
+            document.querySelectorAll('.patient-detail').forEach(detail => {
+                detail.classList.add('d-none');
+            });
+            
+            // Mostrar estado vacío
+            document.getElementById('empty-state').classList.remove('d-none');
+            
+            selectedPatientId = null;
+        }
+
+        // Efectos de hover mejorados
+        document.querySelectorAll('.patient-card').forEach(card => {
+            card.addEventListener('mouseenter', function() {
+                if (!this.classList.contains('active')) {
+                    this.style.transform = 'translateY(-2px)';
+                }
+            });
+            
+            card.addEventListener('mouseleave', function() {
+                if (!this.classList.contains('active')) {
+                    this.style.transform = 'translateY(0)';
+                }
+            });
+        });
+
+        // Responsive behavior
+        window.addEventListener('resize', function() {
+            if (selectedPatientId && window.innerWidth >= 992) {
+                // En desktop, no hacer scroll automático
+                return;
+            }
+        });
+    </script>
+</body>
+</html>

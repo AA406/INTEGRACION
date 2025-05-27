@@ -15,7 +15,7 @@ urlpatterns = [
 
 # Servir archivos estáticos (HTML + assets) en desarrollo
 if settings.DEBUG:
-    urlpatterns += static('/', document_root=os.path.join(settings.BASE_DIR, "html"))
+   
     urlpatterns += static('/assets/', document_root=os.path.join(settings.BASE_DIR, "assets"))
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
     urlpatterns += static(settings.STATIC_URL, document_root=settings.STATICFILES_DIRS[0])

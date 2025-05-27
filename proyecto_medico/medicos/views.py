@@ -1,8 +1,10 @@
-from rest_framework import viewsets
-from rest_framework.decorators import api_view
+from rest_framework import viewsets, status
+from rest_framework.decorators import api_view, permission_classes
 from rest_framework.response import Response
-from rest_framework import status
+from rest_framework.permissions import AllowAny
 from django_filters.rest_framework import DjangoFilterBackend
+from django.shortcuts import render
+from django.views.decorators.csrf import csrf_exempt
 
 from .models import Medico, Especialidad, Permiso, Administrador, ObservacionesMedico
 from .serializers import (
@@ -50,8 +52,9 @@ class ObservacionesMedicoViewSet(viewsets.ModelViewSet):
         return ObservacionesMedico.objects.all()
 
 # Login (valida email y RUT como contraseña)
-
+@csrf_exempt
 @api_view(['POST'])
+@permission_classes([AllowAny])
 def login_view(request):
     email = request.data.get('email')
     password = request.data.get('password')
@@ -77,8 +80,8 @@ def login_view(request):
     return Response({'message': 'Credenciales inválidas'}, status=status.HTTP_401_UNAUTHORIZED)
 
 # Perfil de médico por ID
-
 @api_view(['GET'])
+@permission_classes([AllowAny])
 def perfil_medico(request):
     id_medico = request.GET.get('id')
     if not id_medico:
@@ -96,3 +99,7 @@ def perfil_medico(request):
         return Response(data)
     except Medico.DoesNotExist:
         return Response({'error': 'Médico no encontrado'}, status=404)
+
+# Vista HTML (ej: historial médico)
+def historial_medico_view(request):
+    return render(request, 'historial_medico.html')
