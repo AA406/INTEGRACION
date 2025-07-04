@@ -58,3 +58,5 @@ gulpfile.tmp.*
 !/html/*
 /html-demo
 /html-starter-demo
+
+instantclient_23_8/
