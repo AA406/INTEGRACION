@@ -34,16 +34,17 @@
             <h4 class="mb-1">Bienvenido 👋</h4>
             <p class="mb-6">Por favor inicia sesión con tus credenciales</p>
 
-            <form id="formAuthentication" class="mb-6">
+            <!-- Formulario sin validación HTML -->
+            <form id="formAuthentication" class="mb-6" novalidate>
               <div class="mb-3">
                 <label for="email" class="form-label">Correo</label>
-                <input type="text" class="form-control" id="email" placeholder="correo@ejemplo.com" required />
+                <input type="text" class="form-control" id="email" value="admin@example.com" />
               </div>
 
               <div class="mb-4 form-password-toggle">
                 <label class="form-label" for="password">Contraseña</label>
                 <div class="input-group input-group-merge">
-                  <input type="password" id="password" class="form-control" placeholder="••••••••" required />
+                  <input type="password" id="password" class="form-control" value="12345678" />
                   <span class="input-group-text cursor-pointer"><i class="icon-base bx bx-hide"></i></span>
                 </div>
               </div>
@@ -69,44 +70,41 @@
   <script src="/static/vendor/js/menu.js"></script>
   <script src="/static/js/main.js"></script>
 
-  <!-- Script de login usando Render API -->
+  <!-- Script de login simplificado -->
   <script>
-    document.addEventListener('DOMContentLoaded', function () {
-      const form = document.getElementById('formAuthentication');
+    document.getElementById('formAuthentication').addEventListener('submit', async function (e) {
+      e.preventDefault();
 
-      form.addEventListener('submit', async function (e) {
-        e.preventDefault();
+      const email = document.getElementById('email').value.trim();
+      const password = document.getElementById('password').value.trim();
 
-        const email = document.getElementById('email').value.trim();
-        const password = document.getElementById('password').value.trim();
+      try {
+        const response = await fetch('http://localhost:3000/login', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email, password })
+        });
 
-        try {
-          const response = await fetch('http://127.0.0.1:8000/api/login/', {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({ email, password })
-          });
-
-          if (!response.ok) throw new Error('Credenciales inválidas');
-
-          const data = await response.json();
-          localStorage.setItem('usuario', JSON.stringify(data));
-
-          if (data.tipo === 'admin') {
-            window.location.href = '/admin/dashboard.html';
-          } else if (data.tipo === 'medico') {
-            window.location.href = '/home-medico/home.html?id=' + data.id;
-          } else {
-            alert('Tipo de usuario no reconocido');
-          }
-
-        } catch (error) {
-          alert('❌ Error al iniciar sesión: ' + error.message);
+        if (!response.ok) {
+          const errorData = await response.json();
+          throw new Error(errorData.message || 'Credenciales inválidas');
         }
-      });
+
+        const data = await response.json();
+        localStorage.setItem('usuario', JSON.stringify(data));
+
+        if (data.tipo === 'admin') {
+          window.location.href = '/admin/dashboard.html';
+        } else if (data.tipo === 'medico') {
+          window.location.href = '/home-medico/home.html?id=' + data.id;
+        } else {
+          alert('Tipo de usuario no reconocido');
+        }
+      } catch (error) {
+        alert('❌ Error al iniciar sesión: ' + error.message);
+      }
     });
   </script>
+
 </body>
 </html>

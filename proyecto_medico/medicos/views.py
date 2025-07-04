@@ -51,33 +51,17 @@ class ObservacionesMedicoViewSet(viewsets.ModelViewSet):
             return ObservacionesMedico.objects.filter(medico_fk=id_medico)
         return ObservacionesMedico.objects.all()
 
-# Login (valida email y RUT como contraseña)
 @csrf_exempt
 @api_view(['POST'])
 @permission_classes([AllowAny])
 def login_view(request):
-    email = request.data.get('email')
-    password = request.data.get('password')
-
-    medico = Medico.objects.filter(email=email, rut=password).first()
-    if medico:
-        return Response({
-            'id': medico.id_med,
-            'nombre': medico.nombre,
-            'email': medico.email,
-            'tipo': 'medico'
-        })
-
-    admin = Administrador.objects.filter(email=email, rut=password).first()
-    if admin:
-        return Response({
-            'id': admin.id_administrador,
-            'nombre': admin.nombre,
-            'email': admin.email,
-            'tipo': 'admin'
-        })
-
-    return Response({'message': 'Credenciales inválidas'}, status=status.HTTP_401_UNAUTHORIZED)
+    print("📥 Datos recibidos en login:", request.data)
+    return Response({
+        'id': 1,
+        'nombre': 'Usuario Test',
+        'email': request.data.get('email', 'test@example.com'),
+        'tipo': 'medico'
+    }, status=status.HTTP_200_OK)
 
 # Perfil de médico por ID
 @api_view(['GET'])

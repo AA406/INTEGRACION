@@ -25,8 +25,6 @@
       <div class="card-body">
         <h4 class="mb-4 text-primary text-center">Solicitud de Permiso de Ausencia</h4>
         <form id="permiso-form">
-          <input type="hidden" id="medico_id" />
-
           <div class="mb-3">
             <label for="tipo" class="form-label">Tipo de Permiso</label>
             <input type="text" class="form-control" id="tipo" placeholder="Ej: Vacaciones" required />
@@ -78,27 +76,27 @@
 
   <!-- Script funcional -->
   <script>
-    document.addEventListener('DOMContentLoaded', async function () {
-      const usuario = JSON.parse(localStorage.getItem("usuario"));
-
-      if (!usuario || usuario.tipo !== "medico") {
-        alert("Debes iniciar sesión como médico.");
-        window.location.href = "/inicio/auth-login-basic.html";
+    document.addEventListener('DOMContentLoaded', () => {
+      // Obtener usuario logeado
+      const usuario = JSON.parse(localStorage.getItem('usuario'));
+      console.log('Usuario en permiso.html:', usuario);
+      if (!usuario || usuario.tipo !== 'medico') {
+        alert('Debes iniciar sesión como médico.');
+        window.location.href = '/inicio/auth-login-basic.html';
         return;
       }
 
-      document.getElementById("medico_id").value = usuario.id;
-
+      // Función para cargar permisos existentes
       async function cargarPermisos() {
         try {
-          const res = await fetch('http://127.0.0.1:8000/api/permisos/');
+          const res = await fetch('http://localhost:3000/permisos');
           const data = await res.json();
+          const tbody = document.querySelector('#tabla-permisos tbody');
+          tbody.innerHTML = '';
 
-          const tbody = document.querySelector("#tabla-permisos tbody");
-          tbody.innerHTML = "";
-
-          const permisos = data.filter(p => p.medico === usuario.id);
-          if (permisos.length === 0) {
+          // Filtrar permisos del médico logeado
+          const permisos = data.filter(p => p.MEDICO_ID_MED === usuario.ID);
+          if (!permisos.length) {
             tbody.innerHTML = '<tr><td colspan="5" class="text-center">No hay permisos registrados.</td></tr>';
             return;
           }
@@ -106,53 +104,55 @@
           permisos.forEach(p => {
             const fila = `
               <tr>
-                <td>${p.id_permiso}</td>
-                <td>${p.tipo}</td>
-                <td>${p.fecha_inicio}</td>
-                <td>${p.fecha_fin}</td>
-                <td>${p.estado}</td>
+                <td>${p.ID_PERMISO}</td>
+                <td>${p.TIPO}</td>
+                <td>${p.FECHA_INICIO}</td>
+                <td>${p.FECHA_FIN}</td>
+                <td>${p.ESTADO}</td>
               </tr>`;
             tbody.innerHTML += fila;
           });
         } catch (error) {
-          console.error("Error al cargar permisos:", error);
-          document.querySelector("#tabla-permisos tbody").innerHTML =
+          console.error('Error al cargar permisos:', error);
+          document.querySelector('#tabla-permisos tbody').innerHTML =
             '<tr><td colspan="5" class="text-danger">Error al cargar permisos</td></tr>';
         }
       }
 
-      document.getElementById("permiso-form").addEventListener("submit", async function (e) {
+      // Manejo de envío de nueva solicitud
+      document.getElementById('permiso-form').addEventListener('submit', async e => {
         e.preventDefault();
-        const data = {
-          tipo: document.getElementById("tipo").value,
-          fecha_inicio: document.getElementById("fecha_inicio").value,
-          fecha_fin: document.getElementById("fecha_fin").value,
-          estado: "Pendiente",  // ← Cambiado a texto
-          medico: usuario.id
+        const payload = {
+          tipo: document.getElementById('tipo').value,
+          fecha_inicio: document.getElementById('fecha_inicio').value,
+          fecha_fin: document.getElementById('fecha_fin').value,
+          estado: 'Pendiente',
+          medico: usuario.ID  // Usar siempre el ID del médico logeado
         };
-
+        console.log('Enviando datos permiso:', payload);
         try {
-          const res = await fetch("http://127.0.0.1:8000/api/permisos/", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(data)
+          const res = await fetch('http://localhost:3000/permisos', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload)
           });
 
-          if (res.ok) {
-            document.getElementById("mensaje").innerHTML =
-              '<div class="alert alert-success">✅ Solicitud enviada correctamente.</div>';
-            document.getElementById("permiso-form").reset();
-            cargarPermisos();
-          } else {
-            throw new Error("Error en la solicitud");
+          if (!res.ok) {
+            const errData = await res.json();
+            throw new Error(errData.message || 'Error al enviar solicitud');
           }
+          document.getElementById('mensaje').innerHTML =
+            '<div class="alert alert-success">✅ Solicitud enviada correctamente.</div>';
+          document.getElementById('permiso-form').reset();
+          cargarPermisos();
         } catch (error) {
-          console.error("Error:", error);
-          document.getElementById("mensaje").innerHTML =
+          console.error('❌ Error al enviar solicitud:', error);
+          document.getElementById('mensaje').innerHTML =
             '<div class="alert alert-danger">❌ Error al enviar la solicitud.</div>';
         }
       });
 
+      // Inicializar datos
       cargarPermisos();
     });
   </script>

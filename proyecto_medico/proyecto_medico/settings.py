@@ -29,6 +29,11 @@ INSTALLED_APPS = [
     'corsheaders',  # CORS activado
     'medicos',
 ]
+STATICFILES_DIRS = [
+    BASE_DIR / "html",         # Asegúrate de que "html" contenga la carpeta "inicio"
+    BASE_DIR / "assets",
+    BASE_DIR / "static",
+]
 
 # Middleware
 MIDDLEWARE = [
@@ -89,7 +94,7 @@ USE_TZ = True
 STATIC_URL = '/static/'
 STATICFILES_DIRS = [
     os.path.join(BASE_DIR, "html"),
-    os.path.join(BASE_DIR, "assets"),
+    
     BASE_DIR / "static",
 ]
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
